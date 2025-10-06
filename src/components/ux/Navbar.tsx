@@ -10,7 +10,7 @@ import Brand from "./Brand";
 const PRIMARY_COLOR = "pink.600";
 
 export function Navbar() {
-  const brandTextColor = useColorModeValue("gray.900", "white");
+  
   const containerBg = useColorModeValue("white", "gray.900");
 
   return (
@@ -24,10 +24,13 @@ export function Navbar() {
       >
         <Flex align="center" justify="space-between" gap={4}>
           <Brand/>
-          <Navlink primaryColor={PRIMARY_COLOR} />
+          <div id="navLinks">
+             <Navlink primaryColor={PRIMARY_COLOR} />
+          </div>
+          
 
-          <HStack align="center" gap={4}>
-            <ColorModeButton display={{ base: "none", sm: "inline-flex" }} />
+          <HStack align="center" gap={4} id="login">
+            <ColorModeButton display={{ base: "none", sm: "inline-flex" }}/>
             <Button
               bg={PRIMARY_COLOR}
               color="white"
@@ -40,7 +43,7 @@ export function Navbar() {
               transition="transform 0.2s ease"
               _hover={{ transform: "scale(1.05)", bg: PRIMARY_COLOR }}
             >
-              Login
+              Sign In
             </Button>
           </HStack>
           <MobileNav />

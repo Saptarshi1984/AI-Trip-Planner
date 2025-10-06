@@ -21,15 +21,21 @@ export default function Navlink({
   items = NAV_ITEMS,
   primaryColor = "pink.600",
 }: NavlinkProps) {
-  const linkColor = useColorModeValue("gray.600", "gray.300");
+
+  const linkColor = useColorModeValue("gray.100", "gray.300");
   const linkHoverColor = useColorModeValue(primaryColor, primaryColor);
 
   return (
-    <HStack display={{ base: "none", md: "flex" }} gap={6}>
+    
+    <HStack align={{base:"left", md: "center"}} display={{ base: "flex", md: "flex" }} flexDirection={{base: "column", md: "row"}} gap={{base:1, md:6}} >
       {items.map((item) => (
         <Link
           key={item.label}
           as={NextLink}
+          p={{base:3, md:1}}
+          borderRadius={{base: "lg", md: "none"}}
+          bg={{base:'pink.900', md:'none'}}
+          textDecor={'none'}
           href={item.href}
           fontSize="lg"
           fontWeight="medium"
@@ -41,5 +47,6 @@ export default function Navlink({
         </Link>
       ))}
     </HStack>
+    
   );
 }
