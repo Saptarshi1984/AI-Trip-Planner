@@ -27,11 +27,12 @@ const features: FeatureCardProps[] = [
 ];
 
 export default function FeaturesSection() {
-  const headingColor = useColorModeValue("gray.200", "white");
-  const subheadingColor = useColorModeValue("gray.400", "gray.200");
+  const headingColor = useColorModeValue("gray.600", "white");
+  const subheadingColor = useColorModeValue("gray.500", "gray.200");
+  const bgColor = useColorModeValue("gray.300", "gray.900")
 
   return (
-    <Box as="section" py={{ base: 16, sm: 24 }} overflow='hidden' bg={'gray.900'} mt={4}>
+    <Box as="section" py={{ base: 16, sm: 24 }} overflow='hidden' bg={bgColor} mt={4}>
       <Container maxW="7xl">
         <Stack  maxW="2xl" textAlign="center" mx="auto">
           <Heading as="h2" size="2xl" fontWeight="extrabold" color={headingColor}>

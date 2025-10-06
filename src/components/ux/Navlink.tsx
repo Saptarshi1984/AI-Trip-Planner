@@ -6,7 +6,7 @@ import { HStack, Link } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
 
 export const NAV_ITEMS = [
-  { label: "Destinations", href: "#" },
+  { label: "Destinations", href: "/" },
   { label: "Features", href: "#" },
   { label: "Pricing", href: "#" },
   { label: "Blog", href: "#" },
@@ -22,7 +22,7 @@ export default function Navlink({
   primaryColor = "pink.600",
 }: NavlinkProps) {
 
-  const linkColor = useColorModeValue("gray.100", "gray.300");
+  const linkColor = useColorModeValue("gray.900", "gray.300");
   const linkHoverColor = useColorModeValue(primaryColor, primaryColor);
 
   return (

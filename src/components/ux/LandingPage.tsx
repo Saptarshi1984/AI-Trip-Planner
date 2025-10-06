@@ -1,9 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import Image from "next/image";
 
 export default function LandingPage() {
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   return (
     <Box as="section" position="relative" minH={{ base: "60vh", md: "60vh" }} overflow='hidden' >
       {/* Background image layer */}
@@ -68,7 +74,9 @@ export default function LandingPage() {
             rounded="lg"
             boxShadow="lg"
             transition="transform 0.2s ease"
-            _hover={{ transform: "scale(1.05)", bg: "pink.500" }}
+            loading={loading}
+            _hover={{ transform: "scale(1.05)", bg: "pink.500" }}                       
+            onClick={() => {router.push('/SignIn'); setLoading(true)}}
           >
             Start Planning Your Adventure
           </Button>

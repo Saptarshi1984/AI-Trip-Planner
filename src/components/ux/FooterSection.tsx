@@ -48,7 +48,7 @@ export default function FooterSection() {
             ))}
           </HStack>
 
-          <HStack justify="center" order={{ base: 3, md: 3 }}>
+          <HStack justify="center" order={{ base: 3, md: 3 }} gap={4}>
             {socialLinks.map((social) => (
               <Link
                 key={social.label}
@@ -57,7 +57,7 @@ export default function FooterSection() {
                 color={socialColor}
                 _hover={{ color: socialHoverColor }}
               >
-                <social.icon size={24} />
+                <social.icon size={20} />
               </Link>
             ))}
           </HStack>
