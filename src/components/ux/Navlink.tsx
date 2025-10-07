@@ -28,9 +28,9 @@ export default function Navlink({
   return (
     
     <HStack align={{base:"left", md: "center"}} display={{ base: "flex", md: "flex" }} flexDirection={{base: "column", md: "row"}} gap={{base:1, md:6}} >
-      {items.map((item) => (
+      {items.map((item, i) => (
         <Link
-          key={item.label}
+          key={i}
           as={NextLink}
           p={{base:3, md:1}}
           borderRadius={{base: "lg", md: "none"}}
