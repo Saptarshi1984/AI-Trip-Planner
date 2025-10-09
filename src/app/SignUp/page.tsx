@@ -12,9 +12,10 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import NextLink from "next/link";
-
+import { account, ID } from "@/lib/appwrite.client";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -33,10 +34,13 @@ export default function SignUpPage() {
   const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const cardBg = useColorModeValue("white", "gray.900");
   const mutedText = useColorModeValue("gray.600", "gray.400");
   const borderColor = useColorModeValue("gray.100", "gray.700");
+
+  const router = useRouter();
 
   const handleChange =
     (field: "email" | "password") => (event: ChangeEvent<HTMLInputElement>) => {
@@ -60,11 +64,28 @@ export default function SignUpPage() {
     return !nextErrors.email && !nextErrors.password;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!validate()) {
       return;
+    }
+    setLoading(true);
+
+    try {
+      const user = await account.create({
+        userId: ID.unique(),
+        email: formValues.email,
+        password: formValues.password,
+      });
+
+      if (user) {
+        console.log("SignUp successful", user);
+        setLoading(false);
+        router.replace("/Dashboard");
+      }
+    } catch (error) {
+      console.error("Error signing up", error);
     }
 
     setIsSubmitting(true);
@@ -74,7 +95,7 @@ export default function SignUpPage() {
     }, 800);
   };
 
-  const handleGoogleSignIn = () => {};
+  const handleGoogleSignUp = () => {};
 
   return (
     <Flex
@@ -105,7 +126,7 @@ export default function SignUpPage() {
             p={{ base: 6, md: 10 }}
           >
             <Stack>
-              <Box as="form">
+              <form onSubmit={handleSubmit}>
                 <Stack gap={8}>
                   <Input
                     id="email"
@@ -122,30 +143,30 @@ export default function SignUpPage() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       focusRingColor={"pink.subtle"}
-                      position='relative'
+                      position="relative"
                       value={formValues.password}
                       onChange={handleChange("password")}
                       autoComplete="current-password"
                       placeholder="Enter your password"
                     />
-                    
+
                     <Button
                       variant="ghost"
                       size="sm"
-                      position='absolute'
-                      right={{base: 8, md:10}}
-                      bottom={{base: 204, md:220} }                                           
+                      position="absolute"
+                      right={{ base: 8, md: 10 }}
+                      bottom={{ base: 204, md: 220 }}
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
                       {showPassword ? <FiEyeOff /> : <FiEye />}
                     </Button>
                   </Box>
 
-                  <Button type="submit" colorScheme="pink">
-                    Sign in
+                  <Button type="submit" colorScheme="pink" loading={loading}>
+                    Sign up
                   </Button>
                 </Stack>
-              </Box>
+              </form>
 
               <Flex
                 display={"flex"}

@@ -1,6 +1,7 @@
 "use client";
 import { account, ID } from "@/lib/appwrite.client";
 
+
 export type AuthProps = {
   email: string;
   password: string;
@@ -9,10 +10,9 @@ export type AuthProps = {
 //check auth status
 export async function checkAuthStatus() {
   try {
-    const user = await account.get();
-    return user ?? null;
+    return await account.get();
   } catch (error) {
-    console.error("Error in getting authentication data");
+    return null;
   }
 }
 
@@ -24,7 +24,7 @@ export async function signUpUser({ email, password }: AuthProps) {
       email,
       password,
     });
-    return user ?? null;    
+    return user ?? null;
   } catch (error) {
     console.error("User signup not sucessful");
   }

@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { account } from "@/lib/appwrite.client";
 import {
   Box,
   Button,
@@ -14,15 +15,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@/components/ui/color-mode";
+
 import NextLink from "next/link";
 
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-const INITIAL_FORM_STATE = {
-  email: "",
-  password: "",
-};
+
 
 const INITIAL_ERROR_STATE = {
   email: "",
@@ -30,10 +29,13 @@ const INITIAL_ERROR_STATE = {
 };
 
 export default function SignInPage() {
-
   const router = useRouter();
-  const [formValues, setFormValues] = useState(INITIAL_FORM_STATE);
+  const [formValues, setFormValues] = useState({
+  email: "",
+  password: "",
+});
   const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE);
+  const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -63,12 +65,23 @@ export default function SignInPage() {
     return !nextErrors.email && !nextErrors.password;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     if (!validate()) {
       return;
     }
+    setLoading(true);
+
+    const user = await account.createEmailPasswordSession({
+    email: formValues.email.trim(),
+    password: formValues.password
+});
+
+   if(user) {
+    router.replace('/Dashboard');
+    setLoading(false);
+   }
 
     setIsSubmitting(true);
 
@@ -108,7 +121,7 @@ export default function SignInPage() {
             p={{ base: 6, md: 10 }}
           >
             <Stack>
-              <Box as="form">
+              <form onSubmit={handleSubmit}>
                 <Stack gap={8}>
                   <Input
                     id="email"
@@ -125,30 +138,34 @@ export default function SignInPage() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       focusRingColor={"pink.subtle"}
-                      position='relative'
+                      position="relative"
                       value={formValues.password}
                       onChange={handleChange("password")}
                       autoComplete="current-password"
                       placeholder="Enter your password"
                     />
-                    
+
                     <Button
                       variant="ghost"
                       size="sm"
-                      position='absolute'
-                      right={{base: 8, md:10}}
-                      bottom={{base: 204, md:220} }                                           
+                      position="absolute"
+                      right={{ base: 8, md: 10 }}
+                      bottom={{ base: 204, md: 220 }}
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
                       {showPassword ? <FiEyeOff /> : <FiEye />}
                     </Button>
                   </Box>
 
-                  <Button type="submit" colorScheme="pink">
+                  <Button 
+                  type="submit" 
+                  colorScheme="pink" 
+                  loading={loading}                 
+                  >
                     Sign in
                   </Button>
                 </Stack>
-              </Box>
+              </form>
 
               <Flex
                 display={"flex"}
@@ -163,7 +180,7 @@ export default function SignInPage() {
                 <div className="divider"></div>
               </Flex>
 
-              <Button>
+              <Button type="button">
                 <FcGoogle />
                 Sign in with Google
               </Button>
@@ -174,7 +191,7 @@ export default function SignInPage() {
                   as={NextLink}
                   href="/SignUp"
                   color="pink.500"
-                  fontWeight="semibold"                  
+                  fontWeight="semibold"
                 >
                   Create an account
                 </Link>
