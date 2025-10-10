@@ -18,6 +18,7 @@ import NextLink from "next/link";
 import { account, ID } from "@/lib/appwrite.client";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { signInWithGoolge } from "@/lib/appwrite.service";
 
 const INITIAL_FORM_STATE = {
   email: "",
@@ -35,6 +36,7 @@ export default function SignUpPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const cardBg = useColorModeValue("white", "gray.900");
   const mutedText = useColorModeValue("gray.600", "gray.400");
@@ -64,7 +66,7 @@ export default function SignUpPage() {
     return !nextErrors.email && !nextErrors.password;
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!validate()) {
@@ -82,10 +84,11 @@ export default function SignUpPage() {
       if (user) {
         console.log("SignUp successful", user);
         setLoading(false);
-        router.replace("/Dashboard");
+        router.replace('SignIn');
       }
     } catch (error) {
       console.error("Error signing up", error);
+      return null;
     }
 
     setIsSubmitting(true);
@@ -95,7 +98,20 @@ export default function SignUpPage() {
     }, 800);
   };
 
-  const handleGoogleSignUp = () => {};
+  const handleGoogleSignUp = async () => {
+     try {
+          
+          setGoogleLoading(true);
+          const successURL = `${window.location.origin}/Dashboard`;
+          const failureURL = `${window.location.origin}/SignIn`;
+    
+          await signInWithGoolge(successURL, failureURL);      
+          
+        } catch (error) {
+          console.error("Error in login with Google", error);
+          router.replace("/SignIn");
+        }
+  };
 
   return (
     <Flex
@@ -126,7 +142,7 @@ export default function SignUpPage() {
             p={{ base: 6, md: 10 }}
           >
             <Stack>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSignUp}>
                 <Stack gap={8}>
                   <Input
                     id="email"
@@ -181,9 +197,12 @@ export default function SignUpPage() {
                 <div className="divider"></div>
               </Flex>
 
-              <Button>
+              <Button 
+              type="button"
+              loading={googleLoading}
+              onClick={handleGoogleSignUp}>
                 <FcGoogle />
-                Sign in with Google
+                Sign up with Google
               </Button>
 
               <Text fontSize="sm" color={mutedText} textAlign="center">

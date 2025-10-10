@@ -44,7 +44,7 @@ export function Navbar() {
 
   useEffect(() => {
     getCurrentUser();
-  }, []);
+  }, [setAuthStatus]);
 
   return (
     !(path == "/SignIn" || path == "/SignUp") && (

@@ -15,13 +15,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@/components/ui/color-mode";
-
+import { OAuthProvider } from "appwrite";
 import NextLink from "next/link";
-
+import { signInUser, signInWithGoolge } from "@/lib/appwrite.service";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-
-
 
 const INITIAL_ERROR_STATE = {
   email: "",
@@ -31,11 +29,12 @@ const INITIAL_ERROR_STATE = {
 export default function SignInPage() {
   const router = useRouter();
   const [formValues, setFormValues] = useState({
-  email: "",
-  password: "",
-});
+    email: "",
+    password: "",
+  });
   const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -65,7 +64,7 @@ export default function SignInPage() {
     return !nextErrors.email && !nextErrors.password;
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validate()) {
@@ -73,15 +72,15 @@ export default function SignInPage() {
     }
     setLoading(true);
 
-    const user = await account.createEmailPasswordSession({
-    email: formValues.email.trim(),
-    password: formValues.password
-});
+    const user = await signInUser({
+      email: formValues.email,
+      password: formValues.password,
+    });
 
-   if(user) {
-    router.replace('/Dashboard');
-    setLoading(false);
-   }
+    if (user) {
+      router.replace("/Dashboard");
+      setLoading(false);
+    }
 
     setIsSubmitting(true);
 
@@ -90,7 +89,20 @@ export default function SignInPage() {
     }, 800);
   };
 
-  const handleGoogleSignIn = () => {};
+  const handleGoogleSignIn = async () => {
+    try {
+      
+      setGoogleLoading(true);
+      const successURL = `${window.location.origin}/Dashboard`;
+      const failureURL = `${window.location.origin}/SignIn`;
+
+      await  signInWithGoolge(successURL, failureURL);      
+      
+    } catch (error) {
+      console.error("Error in login with Google", error);
+      router.replace("/SignIn");
+    }
+  };
 
   return (
     <Flex
@@ -105,7 +117,7 @@ export default function SignInPage() {
       <Container maxW="lg" p={0}>
         <Stack>
           <Stack textAlign="center">
-            <Heading size="xl">Welcome back</Heading>
+            <Heading size="xl">Sign in to your account</Heading>
             <Text color={mutedText}>
               Sign in to your account to continue planning your next trip.
             </Text>
@@ -121,7 +133,7 @@ export default function SignInPage() {
             p={{ base: 6, md: 10 }}
           >
             <Stack>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSignIn}>
                 <Stack gap={8}>
                   <Input
                     id="email"
@@ -157,11 +169,7 @@ export default function SignInPage() {
                     </Button>
                   </Box>
 
-                  <Button 
-                  type="submit" 
-                  colorScheme="pink" 
-                  loading={loading}                 
-                  >
+                  <Button type="submit" colorScheme="pink" loading={loading}>
                     Sign in
                   </Button>
                 </Stack>
@@ -180,7 +188,10 @@ export default function SignInPage() {
                 <div className="divider"></div>
               </Flex>
 
-              <Button type="button">
+              <Button 
+              type="button"
+              loading={googleLoading} 
+              onClick={handleGoogleSignIn}>
                 <FcGoogle />
                 Sign in with Google
               </Button>
