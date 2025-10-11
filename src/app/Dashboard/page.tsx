@@ -16,6 +16,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import { useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
@@ -33,14 +34,6 @@ import {
 
 const PRIMARY_COLOR = "#13a4ec";
 
-/* const JourneyLogo = (props: IconProps) => (
-  <Icon viewBox="0 0 48 48" fill="none" {...props}>
-    <path
-      d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
-      fill="currentColor"
-    />
-  </Icon>
-); */
 
 const navItems = [
   {
@@ -87,14 +80,7 @@ const exploreCards = [
 const DashboardPage = () => {
   const router = useRouter();
 
-  useEffect(() => {
-    async function getCurrentUser() {
-      const user = await checkAuthStatus();
-      router.replace(user ? "/Dashboard" : "/SignIn");
-    }
-
-    getCurrentUser();
-  }, [router]);
+  
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
@@ -103,6 +89,15 @@ const DashboardPage = () => {
   const navHoverBg = useColorModeValue("rgba(19, 164, 236, 0.12)", "rgba(19, 164, 236, 0.18)");
   const navActiveBg = useColorModeValue("rgba(19, 164, 236, 0.18)", "rgba(19, 164, 236, 0.24)");
   const iconAccentBg = useColorModeValue("rgba(19, 164, 236, 0.12)", "rgba(19, 164, 236, 0.2)");
+
+  useEffect(() => {
+    async function getCurrentUser() {
+      const user = await checkAuthStatus();
+      router.replace(user ? "/Dashboard" : "/SignIn");
+    }
+
+    getCurrentUser();
+  }, [router]);
 
   return (
     <Flex
@@ -138,8 +133,7 @@ const DashboardPage = () => {
             {navItems.map((item) => (
               <Flex
                 key={item.label}
-                as={ChakraLink}
-                href={item.href}
+                as={ChakraLink}                
                 align="center"
                 gap={3}
                 px={4}
@@ -163,15 +157,12 @@ const DashboardPage = () => {
         </Stack>
 
         <Flex align="center" gap={3}>
-          {/* <Avatar
-            size="md"
-            name="Sarah W."
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnyDkVf3SWzSC0BvyfLOnIqBwBt_Kz7KktnAB92fCO6953WmoqMzskUvcd5df-D8dxNiDjGxHcM3vFrb1QWykfSEDmWfgxWOB4kw0GTzm3mG1xQRXGqy6sP2ROFKx7nOjL3ZhrT9H4fhenSKAOLvNPh9w5aOolu8OKdRUBIDoMXWF93PMoTXc8JtKNkuIEVZfyN6KxwuPW-aPE3CE-DBPGa5PsFNhHhxzERPLyBzkPwSkfT77Uvbx10EER2CLBq3BjDxlWmrKWUbw"
-          /> */}
+          
           <Stack >
             <Text fontWeight="bold">Sarah W.</Text>
             <ChakraLink
-              href="#"
+              as={NextLink}
+              href="/Profile"
               fontSize="sm"
               color={subtleColor}
               _hover={{ color: PRIMARY_COLOR, textDecoration: "none" }}
@@ -192,14 +183,7 @@ const DashboardPage = () => {
         >
           <Heading size="lg">Welcome back, Sarah!</Heading>
           <Flex align="center" gap={3}>
-            <IconButton
-              aria-label="Notifications"
-              variant="ghost"
-              rounded="full"
-              icon={<MdNotificationsNone size={22} />}
-              color={subtleColor}
-              _hover={{ bg: navHoverBg, color: PRIMARY_COLOR }}
-            />
+            <MdNotificationsNone size={22} />
             <Button
               bg={PRIMARY_COLOR}
               color="white"

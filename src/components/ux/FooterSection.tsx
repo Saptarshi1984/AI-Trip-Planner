@@ -3,6 +3,7 @@
 import { Box, Container, Flex, HStack, Link, Stack, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 const footerLinks = [
   { label: "About Us", href: "#" },
@@ -18,6 +19,8 @@ const socialLinks = [
 ];
 
 export default function FooterSection() {
+
+  const path = usePathname();
   const footerBg = useColorModeValue("white", "rgba(17, 24, 39, 0.5)");
   const linkColor = useColorModeValue("gray.500", "gray.400");
   const linkHoverColor = useColorModeValue("pink.500", "pink.400");
@@ -26,8 +29,13 @@ export default function FooterSection() {
   const copyrightColor = useColorModeValue("gray.500", "gray.400");
 
   return (
-    <Box as="footer" bg={footerBg} py={6}>
-      <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }}>
+    !(path == "/SignIn" || path == "/SignUp") && (<Box as="footer"  py={6}>
+      <Container 
+      maxW="76rem" 
+      py={6} 
+      bg={footerBg} 
+      px={{ base: 4, sm: 6, lg: 8 }} 
+      borderRadius="xl">
         <Flex
           direction={{ base: "column", md: "row" }}
           align="center"
@@ -67,6 +75,6 @@ export default function FooterSection() {
           </Text>
         </Flex>
       </Container>
-    </Box>
+    </Box>)
   );
 }

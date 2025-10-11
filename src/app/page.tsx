@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import FeaturesSection from "@/components/ux/FeatureSection";
-import FooterSection from "@/components/ux/FooterSection";
 import LandingPage from "@/components/ux/LandingPage";
 import ReviewSection from "@/components/ux/ReviewSection";
 import SubscriptionSection from "@/components/ux/SubscriptionSection";
@@ -29,8 +28,7 @@ export default function Home() {
         <LandingPage />
         <FeaturesSection />
         <ReviewSection />
-        <SubscriptionSection />
-        <FooterSection />        
+        <SubscriptionSection />       
       </Container>
     </main>
   );

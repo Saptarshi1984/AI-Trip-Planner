@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import NextLink from "next/link";
-import { account, ID } from "@/lib/appwrite.client";
+import { account, ID, tablesDB } from "@/lib/appwrite.client";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { signInWithGoolge } from "@/lib/appwrite.service";
@@ -75,16 +75,32 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
+      // create user
       const user = await account.create({
         userId: ID.unique(),
         email: formValues.email,
         password: formValues.password,
       });
 
+      //create a session for the browser
+      await account.createEmailPasswordSession({
+        email: formValues.email,
+        password: formValues.password,
+      });
+
+      await tablesDB.createRow({
+        databaseId: "68ea1c19002774b84c21",
+        tableId: "user_profiles",
+        rowId: user.$id,
+        data: {
+          email: user.email,          
+        },
+      });
+
       if (user) {
         console.log("SignUp successful", user);
         setLoading(false);
-        router.replace('SignIn');
+        router.replace("/SignIn");
       }
     } catch (error) {
       console.error("Error signing up", error);
@@ -99,18 +115,16 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignUp = async () => {
-     try {
-          
-          setGoogleLoading(true);
-          const successURL = `${window.location.origin}/Dashboard`;
-          const failureURL = `${window.location.origin}/SignIn`;
-    
-          await signInWithGoolge(successURL, failureURL);      
-          
-        } catch (error) {
-          console.error("Error in login with Google", error);
-          router.replace("/SignIn");
-        }
+    try {
+      setGoogleLoading(true);
+      const successURL = `${window.location.origin}/Dashboard`;
+      const failureURL = `${window.location.origin}/SignIn`;
+
+      await signInWithGoolge(successURL, failureURL);
+    } catch (error) {
+      console.error("Error in login with Google", error);
+      router.replace("/SignIn");
+    }
   };
 
   return (
@@ -197,10 +211,11 @@ export default function SignUpPage() {
                 <div className="divider"></div>
               </Flex>
 
-              <Button 
-              type="button"
-              loading={googleLoading}
-              onClick={handleGoogleSignUp}>
+              <Button
+                type="button"
+                loading={googleLoading}
+                onClick={handleGoogleSignUp}
+              >
                 <FcGoogle />
                 Sign up with Google
               </Button>
