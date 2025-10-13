@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -31,9 +31,8 @@ import {
   MdNotificationsNone,
   MdPersonOutline,
 } from "react-icons/md";
-
+import { account, tablesDB } from "@/lib/appwrite.client";
 const PRIMARY_COLOR = "#13a4ec";
-
 
 const navItems = [
   {
@@ -73,32 +72,77 @@ const exploreCards = [
   {
     icon: MdExplore,
     title: "Get Travel Inspiration",
-    description: "Discover new destinations and travel ideas from our community.",
+    description:
+      "Discover new destinations and travel ideas from our community.",
   },
 ];
 
 const DashboardPage = () => {
   const router = useRouter();
-
-  
+  const [displayName, setDisplayName] = useState<string>('Unknown')
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
   const subtleColor = useColorModeValue("#6b7280", "#9ca3af");
   const cardBg = useColorModeValue("#ffffff", "#182830");
-  const navHoverBg = useColorModeValue("rgba(19, 164, 236, 0.12)", "rgba(19, 164, 236, 0.18)");
-  const navActiveBg = useColorModeValue("rgba(19, 164, 236, 0.18)", "rgba(19, 164, 236, 0.24)");
-  const iconAccentBg = useColorModeValue("rgba(19, 164, 236, 0.12)", "rgba(19, 164, 236, 0.2)");
+  const navHoverBg = useColorModeValue(
+    "rgba(19, 164, 236, 0.12)",
+    "rgba(19, 164, 236, 0.18)"
+  );
+  const navActiveBg = useColorModeValue(
+    "rgba(19, 164, 236, 0.18)",
+    "rgba(19, 164, 236, 0.24)"
+  );
+  const iconAccentBg = useColorModeValue(
+    "rgba(19, 164, 236, 0.12)",
+    "rgba(19, 164, 236, 0.2)"
+  );
+
+  async function getCurrentUser() {
+    const user = await checkAuthStatus();
+    router.replace(user ? "/Dashboard" : "/SignIn");
+  }
 
   useEffect(() => {
-    async function getCurrentUser() {
-      const user = await checkAuthStatus();
-      router.replace(user ? "/Dashboard" : "/SignIn");
-    }
-
     getCurrentUser();
-  }, [router]);
+  }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const me = await account.get();
+        
+        try {
+          await tablesDB.createRow({
+            databaseId: "68ea1c19002774b84c21",
+            tableId: "user_profiles",
+            rowId: me.$id,
+            data: { email: me.email },
+          });
+
+          
+        } catch (e: any) {
+          if (e?.code === 409) {
+            await tablesDB.updateRow({
+              databaseId: "68ea1c19002774b84c21",
+              tableId: "user_profiles",
+              rowId: me.$id,
+              data: { email: me.email },
+            });
+           
+
+          } else {
+            throw e;
+          }
+        }
+      } catch (e) {
+        // no session; handle as needed
+      }
+      
+    })();
+    
+    
+  }, []);
   return (
     <Flex
       minH="100dvh"
@@ -121,19 +165,18 @@ const DashboardPage = () => {
         mb={{ base: 6, lg: 0 }}
         borderLeftRadius={"xl"}
       >
-        <Stack >
+        <Stack>
           <Flex align="center" gap={3}>
-            
             <Heading size="md" fontWeight="bold">
               Dashboard
             </Heading>
           </Flex>
 
-          <Stack >
+          <Stack>
             {navItems.map((item) => (
               <Flex
                 key={item.label}
-                as={ChakraLink}                
+                as={ChakraLink}
                 align="center"
                 gap={3}
                 px={4}
@@ -157,9 +200,8 @@ const DashboardPage = () => {
         </Stack>
 
         <Flex align="center" gap={3}>
-          
-          <Stack >
-            <Text fontWeight="bold">Sarah W.</Text>
+          <Stack>
+            <Text fontWeight="bold">{displayName}</Text>
             <ChakraLink
               as={NextLink}
               href="/Profile"
@@ -199,13 +241,7 @@ const DashboardPage = () => {
           </Flex>
         </Flex>
 
-        <Box
-          bg={cardBg}
-          rounded="xl"
-          shadow="sm"
-          overflow="hidden"
-          mb={12}
-        >
+        <Box bg={cardBg} rounded="xl" shadow="sm" overflow="hidden" mb={12}>
           <SimpleGrid columns={{ base: 1, md: 2 }}>
             <Flex
               p={{ base: 6, md: 10 }}
@@ -214,7 +250,7 @@ const DashboardPage = () => {
               flexDir="column"
               gap={6}
             >
-              <Stack >
+              <Stack>
                 <Heading size="md">Plan Your Trip with AI</Heading>
                 <Text color={subtleColor}>
                   Let our AI craft your perfect itinerary. Simply provide your
@@ -234,10 +270,7 @@ const DashboardPage = () => {
                 }}
               >
                 <Text>Start Planning</Text>
-                <Icon
-                  as={MdArrowForward}
-                  transition="transform 0.3s ease"
-                />
+                <Icon as={MdArrowForward} transition="transform 0.3s ease" />
               </ChakraLink>
             </Flex>
             <GridItem
@@ -264,7 +297,7 @@ const DashboardPage = () => {
               transition="transform 0.3s ease"
               _hover={{ transform: "translateY(-4px)" }}
             >
-              <Stack >
+              <Stack>
                 <Box
                   bg={iconAccentBg}
                   color={PRIMARY_COLOR}
@@ -274,7 +307,7 @@ const DashboardPage = () => {
                 >
                   <Icon as={card.icon} boxSize={6} />
                 </Box>
-                <Stack >
+                <Stack>
                   <Heading size="sm">{card.title}</Heading>
                   <Text fontSize="sm" color={subtleColor}>
                     {card.description}

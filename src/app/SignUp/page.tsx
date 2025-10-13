@@ -93,14 +93,15 @@ export default function SignUpPage() {
         tableId: "user_profiles",
         rowId: user.$id,
         data: {
-          email: user.email,          
+          email: user.email,
         },
       });
 
       if (user) {
         console.log("SignUp successful", user);
         setLoading(false);
-        router.replace("/SignIn");
+        router.replace("/Dashboard");
+        
       }
     } catch (error) {
       console.error("Error signing up", error);
@@ -115,12 +116,15 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignUp = async () => {
+    
     try {
       setGoogleLoading(true);
       const successURL = `${window.location.origin}/Dashboard`;
       const failureURL = `${window.location.origin}/SignIn`;
 
-      await signInWithGoolge(successURL, failureURL);
+       await signInWithGoolge(successURL, failureURL);
+
+
     } catch (error) {
       console.error("Error in login with Google", error);
       router.replace("/SignIn");

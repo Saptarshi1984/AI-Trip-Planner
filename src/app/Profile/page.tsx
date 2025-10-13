@@ -207,12 +207,12 @@ const ProfilePage = () => {
             <Button
               type="button"
               onClick={handleEditToggle}
-              variant={isEditing ? "outline" : "solid"}
+              variant={isEditing ? "outline" : "solid"}              
               borderRadius="full"
               px={{ base: 6, md: 8 }}
-              colorScheme="blue" 
+             colorPalette={!isEditing ? "white" : "red"} 
             >
-              <MdEdit />
+              {!isEditing && <MdEdit />}
               {isEditing ? "Cancel" : "Edit Profile"}
             </Button>
           </Flex>
