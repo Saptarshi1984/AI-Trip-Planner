@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { account, tablesDB } from "@/lib/appwrite.client";
 import {
   Input,
@@ -34,17 +29,26 @@ type ProfileForm = {
   phoneNumber: string;
   location: string;
 };
-const PROFILE_FIELDS = ["firstName","lastName","email","phoneNumber","location"] as const;
+const PROFILE_FIELDS = [
+  "firstName",
+  "lastName",
+  "email",
+  "phoneNumber",
+  "location",
+] as const;
 
 const ProfilePage = () => {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileForm | null>(null);
-  const [initialProfile, setInitialProfile] = useState<ProfileForm | null>(null);
+  const [initialProfile, setInitialProfile] = useState<ProfileForm | null>(
+    null
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [rowExists, setRowExists] = useState(false);
+  
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
@@ -86,80 +90,72 @@ const ProfilePage = () => {
   };
 
   const fetchUserProfile = async () => {
-  setIsLoading(true);
-  try {
-    const user = await account.get();
-    setUserId(user.$id);
+    setIsLoading(true);
+    try {
+      const user = await account.get();
+      setUserId(user.$id);
 
-    const row = await tablesDB.getRow({
-      databaseId: DATABASE_ID,   // ← use the constant, not ""
-      tableId: TABLE_ID,
-      rowId: user.$id,
-    });
+      const row = await tablesDB.getRow({
+        databaseId: DATABASE_ID, // ← use the constant, not ""
+        tableId: TABLE_ID,
+        rowId: user.$id,
+      });
 
-    // Map top-level row fields → form (use defaults for null/undefined)
-    const nextProfile = Object.fromEntries(
-      PROFILE_FIELDS.map(k => [k, (row as any)[k] ?? ""])
-    ) as ProfileForm;
+      // Map top-level row fields → form (use defaults for null/undefined)
+      const nextProfile = Object.fromEntries(
+        PROFILE_FIELDS.map((k) => [k, (row as any)[k] ?? ""])
+      ) as ProfileForm;
 
-    setProfile(nextProfile);           // ← at minimum, email will be filled
-    setInitialProfile({ ...nextProfile });
-    setRowExists(true);
-    return nextProfile;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    setRowExists(false);
-    setProfile(null);
-    setInitialProfile(null);
-    return null;
-  } finally {
-    setIsLoading(false);
-  }
-};
+      setProfile(nextProfile); // ← at minimum, email will be filled
+      setInitialProfile({ ...nextProfile });
+      setRowExists(true);
+      return nextProfile;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setRowExists(false);
+      setProfile(null);
+      setInitialProfile(null);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange =
-    (field: keyof ProfileForm) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof ProfileForm) => (event: ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
 
       setProfile((prev) => (prev ? { ...prev, [field]: value } : prev));
     };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  if (!profile || !userId) return;
 
-    if (!profile || !userId) {
-      return;
-    }
+  setIsSaving(true);
+  try {
+    await tablesDB.updateRow({
+      databaseId: DATABASE_ID,
+      tableId: TABLE_ID,
+      rowId: userId, // row was created at sign-up
+      data: {
+        firstName:   profile.firstName ?? "",
+        lastName:    profile.lastName ?? "",
+        email:       profile.email ?? "",
+        phoneNumber: profile.phoneNumber ?? "",
+        location:    profile.location ?? "",
+      },
+    });
 
-    setIsSaving(true);
-
-    try {
-      if (rowExists) {
-        await tablesDB.updateRow({
-          databaseId: DATABASE_ID,
-          tableId: TABLE_ID,
-          rowId: userId,
-          data: profile,
-        });
-      } else {
-        await tablesDB.createRow({
-          databaseId: DATABASE_ID,
-          tableId: TABLE_ID,
-          rowId: userId,
-          data: profile,
-        });
-        setRowExists(true);
-      }
-
-      setInitialProfile({ ...profile });
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error saving profile:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    setInitialProfile({ ...profile });
+    setIsEditing(false);
+  } catch (err) {
+    console.error("Update failed:", err);
+    // If this ever throws 404, your sign-up didn't actually create the row.
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   const formFields: Array<{ label: string; field: keyof ProfileForm }> = [
     { label: "First Name", field: "firstName" },
@@ -187,7 +183,7 @@ const ProfilePage = () => {
         shadow="xl"
         p={{ base: 6, md: 10 }}
       >
-        <Stack >
+        <Stack>
           <Flex
             align={{ base: "flex-start", sm: "center" }}
             justify="space-between"
@@ -196,7 +192,7 @@ const ProfilePage = () => {
           >
             {profile && (
               <Flex align="center" gap={4}>
-                <Stack >
+                <Stack>
                   <Heading size="lg">
                     {`${profile.firstName} ${profile.lastName}`}
                   </Heading>
@@ -207,10 +203,10 @@ const ProfilePage = () => {
             <Button
               type="button"
               onClick={handleEditToggle}
-              variant={isEditing ? "outline" : "solid"}              
+              variant={isEditing ? "outline" : "solid"}
               borderRadius="full"
               px={{ base: 6, md: 8 }}
-             colorPalette={!isEditing ? "white" : "red"} 
+              colorPalette={!isEditing ? "white" : "red"}
             >
               {!isEditing && <MdEdit />}
               {isEditing ? "Cancel" : "Edit Profile"}
@@ -219,11 +215,7 @@ const ProfilePage = () => {
 
           <Separator borderColor={dividerColor} />
 
-          <Stack
-            as="form"
-            
-            
-          >
+          <form onSubmit={handleSubmit}>
             <Heading size="md">Personal Information</Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 6 }}>
               {profile &&
@@ -240,11 +232,15 @@ const ProfilePage = () => {
                       {label}
                     </Text>
                     <Input
+                      
                       value={profile[field]}
                       fontWeight="medium"
                       focusRingColor="blue.200"
-                     
                       onChange={handleInputChange(field)}
+                      disabled={!isEditing}
+                      borderWidth={isEditing ? 1 : 0}
+                      borderColor={'cyan.700'}
+                      _focus={{ borderColor: "cyan.500" }}                      
                     />
                   </Box>
                 ))}
@@ -262,17 +258,16 @@ const ProfilePage = () => {
                   fontWeight="semibold"
                   _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
                   _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
-                  
                   loadingText="Saving"
                 >
                   Save Changes
                 </Button>
               </Flex>
             )}
-          </Stack>
+          </form>
 
           <Box bg={highlightBg} rounded="xl" p={{ base: 5, md: 6 }}>
-            <Stack >
+            <Stack>
               <Heading size="sm">Stay Trip-Ready</Heading>
               <Text color={subtleColor}>
                 Keep your contact details current so we can tailor itineraries
