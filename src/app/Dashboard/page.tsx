@@ -33,6 +33,8 @@ import {
 } from "react-icons/md";
 import { account, tablesDB } from "@/lib/appwrite.client";
 const PRIMARY_COLOR = "#13a4ec";
+const DATABASE_ID = "68ea1c19002774b84c21";
+const TABLE_ID = "user_profiles";
 
 const navItems = [
   {
@@ -79,7 +81,7 @@ const exploreCards = [
 
 const DashboardPage = () => {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState<string>('Unknown')
+  const [displayName, setDisplayName] = useState<string>("Unknown");
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
@@ -100,7 +102,21 @@ const DashboardPage = () => {
 
   async function getCurrentUser() {
     const user = await checkAuthStatus();
+
     router.replace(user ? "/Dashboard" : "/SignIn");
+
+    const me = await account.get();
+
+    const row = await tablesDB.getRow({
+      databaseId: DATABASE_ID,
+      tableId: TABLE_ID,
+      rowId: me.$id,
+    });
+
+    const firstname = row.firstName;
+    const lastname = row.lastName;
+    const userName = firstname + " " + lastname;
+    setDisplayName(userName);
   }
 
   useEffect(() => {
@@ -111,7 +127,7 @@ const DashboardPage = () => {
     (async () => {
       try {
         const me = await account.get();
-        
+
         try {
           await tablesDB.createRow({
             databaseId: "68ea1c19002774b84c21",
@@ -119,8 +135,6 @@ const DashboardPage = () => {
             rowId: me.$id,
             data: { email: me.email },
           });
-
-          
         } catch (e: any) {
           if (e?.code === 409) {
             await tablesDB.updateRow({
@@ -129,8 +143,6 @@ const DashboardPage = () => {
               rowId: me.$id,
               data: { email: me.email },
             });
-           
-
           } else {
             throw e;
           }
@@ -138,10 +150,7 @@ const DashboardPage = () => {
       } catch (e) {
         // no session; handle as needed
       }
-      
     })();
-    
-    
   }, []);
   return (
     <Flex
@@ -223,7 +232,7 @@ const DashboardPage = () => {
           gap={4}
           mb={8}
         >
-          <Heading size="lg">Welcome back, Sarah!</Heading>
+          <Heading size="lg">Welcome back, {displayName}</Heading>
           <Flex align="center" gap={3}>
             <MdNotificationsNone size={22} />
             <Button

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { account, tablesDB } from "@/lib/appwrite.client";
+import Image from "next/image";
 import {
   Input,
   Box,
@@ -17,6 +18,7 @@ import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
+import UserAvatar from "@/components/ux/UserAvatar";
 
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
@@ -26,6 +28,7 @@ type ProfileForm = {
   firstName: string;
   lastName: string;
   email: string;
+  userPictureURL:string;
   phoneNumber: string;
   location: string;
 };
@@ -48,6 +51,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [rowExists, setRowExists] = useState(false);
+  const [userProfile, setUserProfile] = useState<string>('');
   
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
@@ -65,7 +69,7 @@ const ProfilePage = () => {
   useEffect(() => {
     async function bootstrapProfile() {
       const user = await checkAuthStatus();
-
+      
       if (!user) {
         router.replace("/SignIn");
         return;
@@ -93,6 +97,7 @@ const ProfilePage = () => {
     setIsLoading(true);
     try {
       const user = await account.get();
+      
       setUserId(user.$id);
 
       const row = await tablesDB.getRow({
@@ -101,12 +106,14 @@ const ProfilePage = () => {
         rowId: user.$id,
       });
 
+      
       // Map top-level row fields → form (use defaults for null/undefined)
       const nextProfile = Object.fromEntries(
         PROFILE_FIELDS.map((k) => [k, (row as any)[k] ?? ""])
       ) as ProfileForm;
 
-      setProfile(nextProfile); // ← at minimum, email will be filled
+      setProfile(nextProfile);
+      setUserProfile(nextProfile.userPictureURL); 
       setInitialProfile({ ...nextProfile });
       setRowExists(true);
       return nextProfile;
@@ -214,12 +221,16 @@ const ProfilePage = () => {
           </Flex>
 
           <Separator borderColor={dividerColor} />
-
+          
+          
+          
           <form onSubmit={handleSubmit}>
+            
             <Heading size="md">Personal Information</Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 6 }}>
+              
               {profile &&
-                formFields.map(({ label, field }) => (
+                formFields.map(({ label, field }) => (                  
                   <Box key={field}>
                     <Text
                       fontSize="sm"

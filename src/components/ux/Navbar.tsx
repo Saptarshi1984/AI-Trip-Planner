@@ -8,11 +8,13 @@ import Navlink from "./Navlink";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
 import { checkAuthStatus } from "@/lib/appwrite.service";
-import { account } from "@/lib/appwrite.client";
+import { account, tablesDB } from "@/lib/appwrite.client";
 import Brand from "./Brand";
 import UserAvatar from "./UserAvatar";
 
 const PRIMARY_COLOR = "pink.600";
+const DATABASE_ID = "68ea1c19002774b84c21";
+const TABLE_ID = "user_profiles";
 
 export function Navbar() {
   const router = useRouter();
@@ -20,6 +22,8 @@ export function Navbar() {
   const [loading, setLoading] = useState(false);
   const containerBg = useColorModeValue("gray.200", "gray.900");
   const [authStatus, setAuthStatus] = useState(false);
+  const [displayName, setDisplayName] = useState<string>("Unknown");
+  const [userProfile, setUserProfile] = useState<string>('');
   
   //cheking auth status
 
@@ -27,6 +31,22 @@ export function Navbar() {
     const user = await checkAuthStatus();
     setAuthStatus(user ? true : false);
     router.replace(user ? "/Dashboard" : "/SignIn");
+
+    const me = await account.get();
+    
+        const row = await tablesDB.getRow({
+          databaseId: DATABASE_ID,
+          tableId: TABLE_ID,
+          rowId: me.$id,
+        });
+    
+        const firstname = row.firstName;
+        const lastname = row.lastName;
+        const userImageUrl = row.profilePictureURL;
+        const userName = firstname + " " + lastname;
+
+        setDisplayName(userName);
+        setUserProfile(userImageUrl);
   }
 
   useEffect(() => {
@@ -110,7 +130,7 @@ export function Navbar() {
                 Sign Out
               </Button>}
 
-              {authStatus && <UserAvatar name='guest' />}
+              {authStatus && <UserAvatar name={displayName} imgURL={userProfile} />}
             </HStack>
             <MobileNav />
           </Flex>

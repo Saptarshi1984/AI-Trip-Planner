@@ -3,7 +3,7 @@ import { Avatar } from "@chakra-ui/react"
 
 interface AvatarProps {
   name?:string;
-  imgURL?:string
+  imgURL?:string;
 }
 
 const UserAvatar = ({name, imgURL}:AvatarProps) => {
