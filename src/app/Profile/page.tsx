@@ -2,7 +2,6 @@
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { account, tablesDB } from "@/lib/appwrite.client";
-import Image from "next/image";
 import {
   Input,
   Box,
@@ -18,7 +17,8 @@ import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
-import UserAvatar from "@/components/ux/UserAvatar";
+import UserProfileCard from "@/components/ux/UserProfileCard";
+
 
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
@@ -36,6 +36,7 @@ const PROFILE_FIELDS = [
   "firstName",
   "lastName",
   "email",
+  "userPictureURL",
   "phoneNumber",
   "location",
 ] as const;
@@ -51,7 +52,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [rowExists, setRowExists] = useState(false);
-  const [userProfile, setUserProfile] = useState<string>('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
@@ -101,19 +102,19 @@ const ProfilePage = () => {
       setUserId(user.$id);
 
       const row = await tablesDB.getRow({
-        databaseId: DATABASE_ID, // ← use the constant, not ""
+        databaseId: DATABASE_ID,
         tableId: TABLE_ID,
         rowId: user.$id,
       });
 
       
-      // Map top-level row fields → form (use defaults for null/undefined)
+      // Map top-level row fields to the form shape (use defaults for null/undefined)
+      const rowRecord = row as Record<string, string | null | undefined>;
       const nextProfile = Object.fromEntries(
-        PROFILE_FIELDS.map((k) => [k, (row as any)[k] ?? ""])
+        PROFILE_FIELDS.map((field) => [field, rowRecord[field] ?? ""])
       ) as ProfileForm;
 
       setProfile(nextProfile);
-      setUserProfile(nextProfile.userPictureURL); 
       setInitialProfile({ ...nextProfile });
       setRowExists(true);
       return nextProfile;
@@ -128,6 +129,80 @@ const ProfilePage = () => {
     }
   };
 
+  const readFileAsDataURL = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result);
+        } else {
+          reject(new Error("Failed to read image file"));
+        }
+      };
+
+      reader.onerror = () => {
+        reject(reader.error ?? new Error("Failed to read image file"));
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+  const handleProfileImageSelect = async (file: File) => {
+    if (!userId) {
+      return;
+    }
+
+    const previousURL = profile?.userPictureURL ?? "";
+    const profileSnapshot = profile;
+
+    setIsUploadingImage(true);
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+
+      setProfile((prev) =>
+        prev ? { ...prev, userPictureURL: dataUrl } : prev
+      );
+
+      if (rowExists) {
+        await tablesDB.updateRow({
+          databaseId: DATABASE_ID,
+          tableId: TABLE_ID,
+          rowId: userId,
+          data: {
+            userPictureURL: dataUrl,
+          },
+        });
+      } else {
+        await tablesDB.createRow({
+          databaseId: DATABASE_ID,
+          tableId: TABLE_ID,
+          rowId: userId,
+          data: {
+            firstName: profileSnapshot?.firstName ?? "",
+            lastName: profileSnapshot?.lastName ?? "",
+            email: profileSnapshot?.email ?? "",
+            phoneNumber: profileSnapshot?.phoneNumber ?? "",
+            location: profileSnapshot?.location ?? "",
+            userPictureURL: dataUrl,
+          },
+        });
+      }
+
+      setInitialProfile((prev) =>
+        prev ? { ...prev, userPictureURL: dataUrl } : prev
+      );
+      setRowExists(true);
+    } catch (err) {
+      console.error("Failed to update profile picture:", err);
+      setProfile((prev) =>
+        prev ? { ...prev, userPictureURL: previousURL } : prev
+      );
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleInputChange =
     (field: keyof ProfileForm) => (event: ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
@@ -136,33 +211,35 @@ const ProfilePage = () => {
     };
 
   const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  if (!profile || !userId) return;
+    e.preventDefault();
+    if (!profile || !userId) return;
 
-  setIsSaving(true);
-  try {
-    await tablesDB.updateRow({
-      databaseId: DATABASE_ID,
-      tableId: TABLE_ID,
-      rowId: userId, // row was created at sign-up
-      data: {
-        firstName:   profile.firstName ?? "",
-        lastName:    profile.lastName ?? "",
-        email:       profile.email ?? "",
-        phoneNumber: profile.phoneNumber ?? "",
-        location:    profile.location ?? "",
-      },
-    });
+    setIsSaving(true);
+    try {
+      await tablesDB.updateRow({
+        databaseId: DATABASE_ID,
+        tableId: TABLE_ID,
+        rowId: userId, // row was created at sign-up
+        data: {
+          firstName: profile.firstName ?? "",
+          lastName: profile.lastName ?? "",
+          email: profile.email ?? "",
+          phoneNumber: profile.phoneNumber ?? "",
+          location: profile.location ?? "",
+          userPictureURL: profile.userPictureURL ?? "",
+        },
+      });
 
-    setInitialProfile({ ...profile });
-    setIsEditing(false);
-  } catch (err) {
-    console.error("Update failed:", err);
-    // If this ever throws 404, your sign-up didn't actually create the row.
-  } finally {
-    setIsSaving(false);
-  }
-};
+      setInitialProfile({ ...profile });
+      setRowExists(true);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Update failed:", err);
+      // If this ever throws 404, your sign-up didn't actually create the row.
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const formFields: Array<{ label: string; field: keyof ProfileForm }> = [
     { label: "First Name", field: "firstName" },
@@ -198,7 +275,8 @@ const ProfilePage = () => {
             gap={6}
           >
             {profile && (
-              <Flex align="center" gap={4}>
+              <Flex align="center" gap={6}>
+                
                 <Stack>
                   <Heading size="lg">
                     {`${profile.firstName} ${profile.lastName}`}
@@ -223,7 +301,7 @@ const ProfilePage = () => {
           <Separator borderColor={dividerColor} />
           
           
-          
+          <UserProfileCard profileURL={profile?.userPictureURL ? profile?.userPictureURL : '/noProfile.png' } />
           <form onSubmit={handleSubmit}>
             
             <Heading size="md">Personal Information</Heading>
@@ -268,7 +346,7 @@ const ProfilePage = () => {
                   py={{ base: 3, md: 4 }}
                   fontWeight="semibold"
                   _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
-                  _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
+                  _active={{ bg: "rgba(19, 164, 236, 0.8)" }}                  
                   loadingText="Saving"
                 >
                   Save Changes

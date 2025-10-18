@@ -25,7 +25,7 @@ While the AI itinerary engine and trip-planning workspace are still being wired,
 - Chakra UI v3 for the design system plus custom UX components.
 - next-themes for persisted color mode control.
 - Appwrite (Account + Tables) for authentication, profiles, and future content.
-- React Icons and Lucide for iconography.
+- React Icons for iconography.
 
 ## Getting Started
 
