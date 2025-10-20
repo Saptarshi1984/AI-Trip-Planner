@@ -30,7 +30,7 @@ export function Navbar() {
     async function getCurrentUser() {
     const user = await checkAuthStatus();
     setAuthStatus(user ? true : false);
-    router.replace(user ? "/Dashboard" : "/SignIn");
+    
 
     const me = await account.get();
     
@@ -52,14 +52,7 @@ export function Navbar() {
   useEffect(() => {
     getCurrentUser();
   }, []);
-/*   async function getCurrentUser() {
-    const user = await checkAuthStatus();
-    if (user) {
-      setAuthStatus(true);
-    } else {
-      setAuthStatus(false);
-    }
-  } */
+
 
   //signout function
   async function signOut() {

@@ -10,7 +10,7 @@ const UserAvatar = ({name, imgURL}:AvatarProps) => {
   return (
     <Avatar.Root boxShadow={'xl'}>
       <Avatar.Fallback name={name} />
-      <Avatar.Image src={imgURL} />
+      <Avatar.Image />
     </Avatar.Root>
   )
 }

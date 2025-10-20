@@ -1,13 +1,13 @@
-/*import type { NextConfig } from "next";
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  
-};
-
-export default nextConfig;*/
-
-export default {
+  reactStrictMode: true,
+  images: {
+    domains: ["fra.cloud.appwrite.io"],
+  },
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
   },
-}
+};
+
+export default nextConfig;

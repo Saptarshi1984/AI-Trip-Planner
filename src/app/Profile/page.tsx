@@ -19,7 +19,6 @@ import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import UserProfileCard from "@/components/ux/UserProfileCard";
 
-
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
@@ -28,15 +27,16 @@ type ProfileForm = {
   firstName: string;
   lastName: string;
   email: string;
-  userPictureURL:string;
+  /* profilePictureURL: string; */
   phoneNumber: string;
   location: string;
 };
+
 const PROFILE_FIELDS = [
   "firstName",
   "lastName",
   "email",
-  "userPictureURL",
+  /* "profilePictureURL", */
   "phoneNumber",
   "location",
 ] as const;
@@ -48,12 +48,8 @@ const ProfilePage = () => {
     null
   );
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [rowExists, setRowExists] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
@@ -68,9 +64,9 @@ const ProfilePage = () => {
   );
 
   useEffect(() => {
-    async function bootstrapProfile() {
+    async function getCurrentUser() {
       const user = await checkAuthStatus();
-      
+
       if (!user) {
         router.replace("/SignIn");
         return;
@@ -79,7 +75,7 @@ const ProfilePage = () => {
       await fetchUserProfile();
     }
 
-    void bootstrapProfile();
+    void getCurrentUser();
   }, [router]);
 
   const handleEditToggle = () => {
@@ -95,10 +91,9 @@ const ProfilePage = () => {
   };
 
   const fetchUserProfile = async () => {
-    setIsLoading(true);
     try {
       const user = await account.get();
-      
+
       setUserId(user.$id);
 
       const row = await tablesDB.getRow({
@@ -107,8 +102,7 @@ const ProfilePage = () => {
         rowId: user.$id,
       });
 
-      
-      // Map top-level row fields to the form shape (use defaults for null/undefined)
+
       const rowRecord = row as Record<string, string | null | undefined>;
       const nextProfile = Object.fromEntries(
         PROFILE_FIELDS.map((field) => [field, rowRecord[field] ?? ""])
@@ -125,83 +119,10 @@ const ProfilePage = () => {
       setInitialProfile(null);
       return null;
     } finally {
-      setIsLoading(false);
     }
   };
 
-  const readFileAsDataURL = (file: File) =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
 
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          resolve(reader.result);
-        } else {
-          reject(new Error("Failed to read image file"));
-        }
-      };
-
-      reader.onerror = () => {
-        reject(reader.error ?? new Error("Failed to read image file"));
-      };
-
-      reader.readAsDataURL(file);
-    });
-
-  const handleProfileImageSelect = async (file: File) => {
-    if (!userId) {
-      return;
-    }
-
-    const previousURL = profile?.userPictureURL ?? "";
-    const profileSnapshot = profile;
-
-    setIsUploadingImage(true);
-    try {
-      const dataUrl = await readFileAsDataURL(file);
-
-      setProfile((prev) =>
-        prev ? { ...prev, userPictureURL: dataUrl } : prev
-      );
-
-      if (rowExists) {
-        await tablesDB.updateRow({
-          databaseId: DATABASE_ID,
-          tableId: TABLE_ID,
-          rowId: userId,
-          data: {
-            userPictureURL: dataUrl,
-          },
-        });
-      } else {
-        await tablesDB.createRow({
-          databaseId: DATABASE_ID,
-          tableId: TABLE_ID,
-          rowId: userId,
-          data: {
-            firstName: profileSnapshot?.firstName ?? "",
-            lastName: profileSnapshot?.lastName ?? "",
-            email: profileSnapshot?.email ?? "",
-            phoneNumber: profileSnapshot?.phoneNumber ?? "",
-            location: profileSnapshot?.location ?? "",
-            userPictureURL: dataUrl,
-          },
-        });
-      }
-
-      setInitialProfile((prev) =>
-        prev ? { ...prev, userPictureURL: dataUrl } : prev
-      );
-      setRowExists(true);
-    } catch (err) {
-      console.error("Failed to update profile picture:", err);
-      setProfile((prev) =>
-        prev ? { ...prev, userPictureURL: previousURL } : prev
-      );
-    } finally {
-      setIsUploadingImage(false);
-    }
-  };
 
   const handleInputChange =
     (field: keyof ProfileForm) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -214,7 +135,6 @@ const ProfilePage = () => {
     e.preventDefault();
     if (!profile || !userId) return;
 
-    setIsSaving(true);
     try {
       await tablesDB.updateRow({
         databaseId: DATABASE_ID,
@@ -226,7 +146,7 @@ const ProfilePage = () => {
           email: profile.email ?? "",
           phoneNumber: profile.phoneNumber ?? "",
           location: profile.location ?? "",
-          userPictureURL: profile.userPictureURL ?? "",
+          /* profilePictureURL: profile.profilePictureURL ?? "", */
         },
       });
 
@@ -235,19 +155,18 @@ const ProfilePage = () => {
       setIsEditing(false);
     } catch (err) {
       console.error("Update failed:", err);
-      // If this ever throws 404, your sign-up didn't actually create the row.
     } finally {
-      setIsSaving(false);
     }
   };
 
-  const formFields: Array<{ label: string; field: keyof ProfileForm }> = [
-    { label: "First Name", field: "firstName" },
-    { label: "Last Name", field: "lastName" },
-    { label: "Email", field: "email" },
-    { label: "Phone Number", field: "phoneNumber" },
-    { label: "Location", field: "location" },
-  ];
+  const labelProps = {
+    fontSize: "sm",
+    textTransform: "uppercase" as const,
+    color: subtleColor,
+    fontWeight: "semibold",
+    letterSpacing: "wide",
+    mb: 1,
+  };
 
   return (
     <Flex
@@ -276,7 +195,6 @@ const ProfilePage = () => {
           >
             {profile && (
               <Flex align="center" gap={6}>
-                
                 <Stack>
                   <Heading size="lg">
                     {`${profile.firstName} ${profile.lastName}`}
@@ -299,40 +217,80 @@ const ProfilePage = () => {
           </Flex>
 
           <Separator borderColor={dividerColor} />
-          
-          
-          <UserProfileCard profileURL={profile?.userPictureURL ? profile?.userPictureURL : '/noProfile.png' } />
+
+          {/*  <UserProfileCard profileURL={profile?.profilePictureURL || "/noProfile.png"} /> */}
+          <Heading size="md">Personal Information</Heading>
           <form onSubmit={handleSubmit}>
-            
-            <Heading size="md">Personal Information</Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 6 }}>
-              
-              {profile &&
-                formFields.map(({ label, field }) => (                  
-                  <Box key={field}>
-                    <Text
-                      fontSize="sm"
-                      textTransform="uppercase"
-                      color={subtleColor}
-                      fontWeight="semibold"
-                      letterSpacing="wide"
-                      mb={1}
-                    >
-                      {label}
-                    </Text>
+              {profile && (
+                <>
+                  <Box>
+                    <Text {...labelProps}>First Name</Text>
                     <Input
-                      
-                      value={profile[field]}
+                      value={profile.firstName}
                       fontWeight="medium"
                       focusRingColor="blue.200"
-                      onChange={handleInputChange(field)}
+                      onChange={handleInputChange("firstName")}
                       disabled={!isEditing}
                       borderWidth={isEditing ? 1 : 0}
-                      borderColor={'cyan.700'}
-                      _focus={{ borderColor: "cyan.500" }}                      
+                      borderColor={"cyan.700"}
+                      _focus={{ borderColor: "cyan.500" }}
                     />
                   </Box>
-                ))}
+                  <Box>
+                    <Text {...labelProps}>Last Name</Text>
+                    <Input
+                      value={profile.lastName}
+                      fontWeight="medium"
+                      focusRingColor="blue.200"
+                      onChange={handleInputChange("lastName")}
+                      disabled={!isEditing}
+                      borderWidth={isEditing ? 1 : 0}
+                      borderColor={"cyan.700"}
+                      _focus={{ borderColor: "cyan.500" }}
+                    />
+                  </Box>
+                  <Box>
+                    <Text {...labelProps}>Email</Text>
+                    <Input
+                      value={profile.email}
+                      fontWeight="medium"
+                      focusRingColor="blue.200"
+                      onChange={handleInputChange("email")}
+                      disabled={!isEditing}
+                      borderWidth={isEditing ? 1 : 0}
+                      borderColor={"cyan.700"}
+                      _focus={{ borderColor: "cyan.500" }}
+                    />
+                  </Box>
+                  <Box>
+                    <Text {...labelProps}>Phone Number</Text>
+                    <Input
+                      value={profile.phoneNumber}
+                      fontWeight="medium"
+                      focusRingColor="blue.200"
+                      onChange={handleInputChange("phoneNumber")}
+                      disabled={!isEditing}
+                      borderWidth={isEditing ? 1 : 0}
+                      borderColor={"cyan.700"}
+                      _focus={{ borderColor: "cyan.500" }}
+                    />
+                  </Box>
+                  <Box>
+                    <Text {...labelProps}>Location</Text>
+                    <Input
+                      value={profile.location}
+                      fontWeight="medium"
+                      focusRingColor="blue.200"
+                      onChange={handleInputChange("location")}
+                      disabled={!isEditing}
+                      borderWidth={isEditing ? 1 : 0}
+                      borderColor={"cyan.700"}
+                      _focus={{ borderColor: "cyan.500" }}
+                    />
+                  </Box>
+                </>
+              )}
             </SimpleGrid>
 
             {isEditing && profile && (
@@ -346,7 +304,7 @@ const ProfilePage = () => {
                   py={{ base: 3, md: 4 }}
                   fontWeight="semibold"
                   _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
-                  _active={{ bg: "rgba(19, 164, 236, 0.8)" }}                  
+                  _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
                   loadingText="Saving"
                 >
                   Save Changes
