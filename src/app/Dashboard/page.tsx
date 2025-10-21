@@ -18,47 +18,21 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { checkAuthStatus } from "@/lib/appwrite.service";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import {
   MdArrowForward,
-  MdBookmarkBorder,
   MdBookmarks,
-  MdDashboard,
   MdExplore,
-  MdFlightTakeoff,
   MdLightbulbOutline,
   MdNotificationsNone,
   MdPersonOutline,
 } from "react-icons/md";
 import { account, tablesDB } from "@/lib/appwrite.client";
+import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
-
-const navItems = [
-  {
-    label: "Dashboard",
-    icon: MdDashboard,
-    href: "#",
-    isActive: true,
-  },
-  {
-    label: "Plan a Trip",
-    icon: MdFlightTakeoff,
-    href: "#",
-  },
-  {
-    label: "My Trips",
-    icon: MdBookmarkBorder,
-    href: "#",
-  },
-  {
-    label: "Inspiration",
-    icon: MdLightbulbOutline,
-    href: "#",
-  },
-];
 
 const exploreCards = [
   {
@@ -82,19 +56,12 @@ const exploreCards = [
 const DashboardPage = () => {
   const router = useRouter();
   const [displayName, setDisplayName] = useState<string>("Unknown");
+  const pathname = usePathname();
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
   const subtleColor = useColorModeValue("#6b7280", "#9ca3af");
   const cardBg = useColorModeValue("#ffffff", "#182830");
-  const navHoverBg = useColorModeValue(
-    "rgba(19, 164, 236, 0.12)",
-    "rgba(19, 164, 236, 0.18)"
-  );
-  const navActiveBg = useColorModeValue(
-    "rgba(19, 164, 236, 0.18)",
-    "rgba(19, 164, 236, 0.24)"
-  );
   const iconAccentBg = useColorModeValue(
     "rgba(19, 164, 236, 0.12)",
     "rgba(19, 164, 236, 0.2)"
@@ -181,31 +148,7 @@ const DashboardPage = () => {
             </Heading>
           </Flex>
 
-          <Stack>
-            {navItems.map((item) => (
-              <Flex
-                key={item.label}
-                as={ChakraLink}
-                align="center"
-                gap={3}
-                px={4}
-                py={2}
-                rounded="lg"
-                bg={item.isActive ? navActiveBg : "transparent"}
-                color={item.isActive ? PRIMARY_COLOR : undefined}
-                fontWeight={item.isActive ? "bold" : "medium"}
-                transition="all 0.2s ease"
-                _hover={{
-                  textDecoration: "none",
-                  bg: navHoverBg,
-                  color: PRIMARY_COLOR,
-                }}
-              >
-                <Icon as={item.icon} boxSize={5} />
-                <Text>{item.label}</Text>
-              </Flex>
-            ))}
-          </Stack>
+          <AccountSidebarNav pathname={pathname} />
         </Stack>
 
         <Flex align="center" gap={3}>
@@ -266,18 +209,19 @@ const DashboardPage = () => {
                   preferences, and we&apos;ll handle the rest.
                 </Text>
               </Stack>
-              <ChakraLink
-                display="inline-flex"
-                alignItems="center"
-                gap={2}
-                color={PRIMARY_COLOR}
-                fontWeight="bold"
-                href="#"
-                _hover={{
-                  textDecoration: "none",
-                  "& svg": { transform: "translateX(4px)" },
-                }}
-              >
+          <ChakraLink
+            display="inline-flex"
+            alignItems="center"
+            gap={2}
+            color={PRIMARY_COLOR}
+            fontWeight="bold"
+            as={NextLink}
+            href="/TripPlanner"
+            _hover={{
+              textDecoration: "none",
+              "& svg": { transform: "translateX(4px)" },
+            }}
+          >
                 <Text>Start Planning</Text>
                 <Icon as={MdArrowForward} transition="transform 0.3s ease" />
               </ChakraLink>

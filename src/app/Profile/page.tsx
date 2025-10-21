@@ -12,12 +12,14 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { MdEdit } from "react-icons/md";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
-import UserProfileCard from "@/components/ux/UserProfileCard";
+import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
 
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
@@ -53,6 +55,7 @@ const ProfilePage = () => {
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
+  const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
   const subtleColor = useColorModeValue("#6b7280", "#9ca3af");
   const highlightBg = useColorModeValue(
     "rgba(19, 164, 236, 0.08)",
@@ -62,6 +65,11 @@ const ProfilePage = () => {
     "rgba(19, 164, 236, 0.16)",
     "rgba(19, 164, 236, 0.32)"
   );
+  const pathname = usePathname();
+  const displayName =
+    profile && `${profile.firstName} ${profile.lastName}`.trim() !== ""
+      ? `${profile.firstName} ${profile.lastName}`.trim()
+      : "Traveler";
 
   useEffect(() => {
     async function getCurrentUser() {
@@ -170,159 +178,198 @@ const ProfilePage = () => {
 
   return (
     <Flex
-      bg={pageBg}
-      maxW="76rem"
       minH="100dvh"
-      justify="center"
-      px={{ base: 4, sm: 6 }}
-      py={{ base: 8, lg: 12 }}
+      maxW="76rem"
       m="auto"
+      flexDir={{ base: "column", lg: "row" }}
+      bg={pageBg}
+      color={foregroundColor}
+      borderRadius="xl"
     >
-      <Box
+      <Flex
+        as="aside"
+        w={{ base: "full", lg: "16rem" }}
         bg={cardBg}
-        maxW="64rem"
-        w="full"
-        rounded="2xl"
-        shadow="xl"
-        p={{ base: 6, md: 10 }}
+        p={{ base: 6, md: 8 }}
+        justify="space-between"
+        minH={{ base: "auto", lg: "100dvh" }}
+        flexDir="column"
+        shadow={{ base: "md", lg: "none" }}
+        mb={{ base: 6, lg: 0 }}
+        borderLeftRadius="xl"
       >
         <Stack>
-          <Flex
-            align={{ base: "flex-start", sm: "center" }}
-            justify="space-between"
-            flexDir={{ base: "column", sm: "row" }}
-            gap={6}
-          >
-            {profile && (
-              <Flex align="center" gap={6}>
-                <Stack>
-                  <Heading size="lg">
-                    {`${profile.firstName} ${profile.lastName}`}
-                  </Heading>
-                  <Text color={subtleColor}>Travel Enthusiast</Text>
-                </Stack>
-              </Flex>
-            )}
-            <Button
-              type="button"
-              onClick={handleEditToggle}
-              variant={isEditing ? "outline" : "solid"}
-              borderRadius="full"
-              px={{ base: 6, md: 8 }}
-              colorPalette={!isEditing ? "white" : "red"}
-            >
-              {!isEditing && <MdEdit />}
-              {isEditing ? "Cancel" : "Edit Profile"}
-            </Button>
+          <Flex align="center" gap={3}>
+            <Heading size="md" fontWeight="bold">
+              Dashboard
+            </Heading>
           </Flex>
 
-          <Separator borderColor={dividerColor} />
-
-          {/*  <UserProfileCard profileURL={profile?.profilePictureURL || "/noProfile.png"} /> */}
-          <Heading size="md">Personal Information</Heading>
-          <form onSubmit={handleSubmit}>
-            <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 6 }}>
-              {profile && (
-                <>
-                  <Box>
-                    <Text {...labelProps}>First Name</Text>
-                    <Input
-                      value={profile.firstName}
-                      fontWeight="medium"
-                      focusRingColor="blue.200"
-                      onChange={handleInputChange("firstName")}
-                      disabled={!isEditing}
-                      borderWidth={isEditing ? 1 : 0}
-                      borderColor={"cyan.700"}
-                      _focus={{ borderColor: "cyan.500" }}
-                    />
-                  </Box>
-                  <Box>
-                    <Text {...labelProps}>Last Name</Text>
-                    <Input
-                      value={profile.lastName}
-                      fontWeight="medium"
-                      focusRingColor="blue.200"
-                      onChange={handleInputChange("lastName")}
-                      disabled={!isEditing}
-                      borderWidth={isEditing ? 1 : 0}
-                      borderColor={"cyan.700"}
-                      _focus={{ borderColor: "cyan.500" }}
-                    />
-                  </Box>
-                  <Box>
-                    <Text {...labelProps}>Email</Text>
-                    <Input
-                      value={profile.email}
-                      fontWeight="medium"
-                      focusRingColor="blue.200"
-                      onChange={handleInputChange("email")}
-                      disabled={!isEditing}
-                      borderWidth={isEditing ? 1 : 0}
-                      borderColor={"cyan.700"}
-                      _focus={{ borderColor: "cyan.500" }}
-                    />
-                  </Box>
-                  <Box>
-                    <Text {...labelProps}>Phone Number</Text>
-                    <Input
-                      value={profile.phoneNumber}
-                      fontWeight="medium"
-                      focusRingColor="blue.200"
-                      onChange={handleInputChange("phoneNumber")}
-                      disabled={!isEditing}
-                      borderWidth={isEditing ? 1 : 0}
-                      borderColor={"cyan.700"}
-                      _focus={{ borderColor: "cyan.500" }}
-                    />
-                  </Box>
-                  <Box>
-                    <Text {...labelProps}>Location</Text>
-                    <Input
-                      value={profile.location}
-                      fontWeight="medium"
-                      focusRingColor="blue.200"
-                      onChange={handleInputChange("location")}
-                      disabled={!isEditing}
-                      borderWidth={isEditing ? 1 : 0}
-                      borderColor={"cyan.700"}
-                      _focus={{ borderColor: "cyan.500" }}
-                    />
-                  </Box>
-                </>
-              )}
-            </SimpleGrid>
-
-            {isEditing && profile && (
-              <Flex justify="flex-end">
-                <Button
-                  type="submit"
-                  bg={PRIMARY_COLOR}
-                  color="white"
-                  rounded="full"
-                  px={{ base: 6, md: 8 }}
-                  py={{ base: 3, md: 4 }}
-                  fontWeight="semibold"
-                  _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
-                  _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
-                  loadingText="Saving"
-                >
-                  Save Changes
-                </Button>
-              </Flex>
-            )}
-          </form>
-
-          <Box bg={highlightBg} rounded="xl" p={{ base: 5, md: 6 }}>
-            <Stack>
-              <Heading size="sm">Stay Trip-Ready</Heading>
-              <Text color={subtleColor}>
-                Keep your contact details current so we can tailor itineraries
-                and send timely updates for your next adventure.
-              </Text>
-            </Stack>
-          </Box>
+          <AccountSidebarNav pathname={pathname} />
         </Stack>
+
+        <Stack >
+          <Text fontWeight="bold">{displayName}</Text>
+          
+          <ChakraLink
+            as={NextLink}
+            href="/Dashboard"
+            fontSize="sm"
+            color={subtleColor}
+            _hover={{ color: PRIMARY_COLOR, textDecoration: "none" }}
+          >
+            Back to Dashboard
+          </ChakraLink>
+        </Stack>
+      </Flex>
+
+      <Box flex="1" p={{ base: 6, lg: 12 }}>
+        <Box
+          bg={cardBg}
+          maxW="64rem"
+          w="full"
+          rounded="2xl"
+          shadow="xl"
+          p={{ base: 6, md: 10 }}
+        >
+          <Stack>
+            <Flex
+              align={{ base: "flex-start", sm: "center" }}
+              justify="space-between"
+              flexDir={{ base: "column", sm: "row" }}
+              gap={6}
+            >
+              {profile && (
+                <Flex align="center" gap={6}>
+                  <Stack>
+                    <Heading size="lg">
+                      {`${profile.firstName} ${profile.lastName}`}
+                    </Heading>
+                    <Text color={subtleColor}>Travel Enthusiast</Text>
+                  </Stack>
+                </Flex>
+              )}
+              <Button
+                type="button"
+                onClick={handleEditToggle}
+                variant={isEditing ? "outline" : "solid"}
+                borderRadius="full"
+                px={{ base: 6, md: 8 }}
+                colorPalette={!isEditing ? "white" : "red"}
+              >
+                {!isEditing && <MdEdit />}
+                {isEditing ? "Cancel" : "Edit Profile"}
+              </Button>
+            </Flex>
+
+            <Separator borderColor={dividerColor} />
+
+            {/*  <UserProfileCard profileURL={profile?.profilePictureURL || "/noProfile.png"} /> */}
+            <Heading size="md">Personal Information</Heading>
+            <form onSubmit={handleSubmit}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 6 }}>
+                {profile && (
+                  <>
+                    <Box>
+                      <Text {...labelProps}>First Name</Text>
+                      <Input
+                        value={profile.firstName}
+                        fontWeight="medium"
+                        focusRingColor="blue.200"
+                        onChange={handleInputChange("firstName")}
+                        disabled={!isEditing}
+                        borderWidth={isEditing ? 1 : 0}
+                        borderColor={"cyan.700"}
+                        _focus={{ borderColor: "cyan.500" }}
+                      />
+                    </Box>
+                    <Box>
+                      <Text {...labelProps}>Last Name</Text>
+                      <Input
+                        value={profile.lastName}
+                        fontWeight="medium"
+                        focusRingColor="blue.200"
+                        onChange={handleInputChange("lastName")}
+                        disabled={!isEditing}
+                        borderWidth={isEditing ? 1 : 0}
+                        borderColor={"cyan.700"}
+                        _focus={{ borderColor: "cyan.500" }}
+                      />
+                    </Box>
+                    <Box>
+                      <Text {...labelProps}>Email</Text>
+                      <Input
+                        value={profile.email}
+                        fontWeight="medium"
+                        focusRingColor="blue.200"
+                        onChange={handleInputChange("email")}
+                        disabled={!isEditing}
+                        borderWidth={isEditing ? 1 : 0}
+                        borderColor={"cyan.700"}
+                        _focus={{ borderColor: "cyan.500" }}
+                      />
+                    </Box>
+                    <Box>
+                      <Text {...labelProps}>Phone Number</Text>
+                      <Input
+                        value={profile.phoneNumber}
+                        fontWeight="medium"
+                        focusRingColor="blue.200"
+                        onChange={handleInputChange("phoneNumber")}
+                        disabled={!isEditing}
+                        borderWidth={isEditing ? 1 : 0}
+                        borderColor={"cyan.700"}
+                        _focus={{ borderColor: "cyan.500" }}
+                      />
+                    </Box>
+                    <Box>
+                      <Text {...labelProps}>Location</Text>
+                      <Input
+                        value={profile.location}
+                        fontWeight="medium"
+                        focusRingColor="blue.200"
+                        onChange={handleInputChange("location")}
+                        disabled={!isEditing}
+                        borderWidth={isEditing ? 1 : 0}
+                        borderColor={"cyan.700"}
+                        _focus={{ borderColor: "cyan.500" }}
+                      />
+                    </Box>
+                  </>
+                )}
+              </SimpleGrid>
+
+              {isEditing && profile && (
+                <Flex justify="flex-end">
+                  <Button
+                    type="submit"
+                    bg={PRIMARY_COLOR}
+                    color="white"
+                    rounded="full"
+                    px={{ base: 6, md: 8 }}
+                    py={{ base: 3, md: 4 }}
+                    fontWeight="semibold"
+                    _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
+                    _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
+                    loadingText="Saving"
+                  >
+                    Save Changes
+                  </Button>
+                </Flex>
+              )}
+            </form>
+
+            <Box bg={highlightBg} rounded="xl" p={{ base: 5, md: 6 }}>
+              <Stack>
+                <Heading size="sm">Stay Trip-Ready</Heading>
+                <Text color={subtleColor}>
+                  Keep your contact details current so we can tailor itineraries
+                  and send timely updates for your next adventure.
+                </Text>
+              </Stack>
+            </Box>
+          </Stack>
+        </Box>
       </Box>
     </Flex>
   );
