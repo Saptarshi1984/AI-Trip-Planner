@@ -46,7 +46,6 @@ const defaultForm: TripPlannerForm = {
 const TripPlannerPage = () => {
   const router = useRouter();
   const pathname = usePathname();
-  
 
   const [formState, setFormState] = useState<TripPlannerForm>(defaultForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,14 +79,18 @@ const TripPlannerPage = () => {
   } as const;
 
   const handleFieldFocus = (
-    event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    event: FocusEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     event.currentTarget.style.borderColor = PRIMARY_COLOR;
     event.currentTarget.style.boxShadow = "0 0 0 1px rgba(19, 164, 236, 0.4)";
   };
 
   const handleFieldBlur = (
-    event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    event: FocusEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     event.currentTarget.style.borderColor = inputBorder;
     event.currentTarget.style.boxShadow = "none";
@@ -120,12 +123,37 @@ const TripPlannerPage = () => {
     event.preventDefault();
     setIsSubmitting(true);
 
-    
+    try {
+      const payload = {
+        ...formState,
+        destination: formState.destination.trim(),        
+        travellers: formState.travelers.trim(),
+        startDate: formState.startDate.trim(),
+        endDate: formState.endDate.trim(),
+        budget: formState.budget.trim(),
+        interests: formState.interests.trim(),
+      };
 
-    
+      const res = await fetch("/api/trip-agent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    setFormState(defaultForm);
-    setIsSubmitting(false);
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log("Trip agent response:", data);
+    } catch (error) {
+      console.log("An error occured in AI response!");
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -151,12 +179,6 @@ const TripPlannerPage = () => {
         borderLeftRadius="xl"
       >
         <Stack>
-          <Heading size="md" fontWeight="bold">
-            Planner
-          </Heading>
-          <Text color={subtleColor} fontSize="sm">
-            Jump between your travel tools with ease.
-          </Text>
           <AccountSidebarNav pathname={pathname} />
         </Stack>
 
@@ -190,12 +212,7 @@ const TripPlannerPage = () => {
             </Text>
           </Stack>
 
-          <Box
-            bg={cardBg}
-            rounded="2xl"
-            shadow="xl"
-            p={{ base: 6, md: 10 }}
-          >
+          <Box bg={cardBg} rounded="2xl" shadow="xl" p={{ base: 6, md: 10 }}>
             <Stack>
               <Stack>
                 <Heading size="md">Trip preferences</Heading>
@@ -235,7 +252,7 @@ const TripPlannerPage = () => {
                       >
                         Travelers
                       </Text>
-                      <select                        
+                      <select
                         value={formState.travelers}
                         onChange={handleChange("travelers")}
                         style={{ ...baseFieldStyles, paddingRight: "2.75rem" }}
@@ -340,7 +357,6 @@ const TripPlannerPage = () => {
                       fontWeight="semibold"
                       _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
                       _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
-                      
                       loadingText="Planning"
                     >
                       Generate itinerary
@@ -351,12 +367,7 @@ const TripPlannerPage = () => {
             </Stack>
           </Box>
 
-          <Box
-            bg={cardBg}
-            rounded="2xl"
-            shadow="md"
-            p={{ base: 6, md: 10 }}
-          >
+          <Box bg={cardBg} rounded="2xl" shadow="md" p={{ base: 6, md: 10 }}>
             <Stack>
               <Stack>
                 <Heading size="md">What happens next?</Heading>

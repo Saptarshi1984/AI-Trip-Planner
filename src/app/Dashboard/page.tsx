@@ -142,12 +142,6 @@ const DashboardPage = () => {
         borderLeftRadius={"xl"}
       >
         <Stack>
-          <Flex align="center" gap={3}>
-            <Heading size="md" fontWeight="bold">
-              Dashboard
-            </Heading>
-          </Flex>
-
           <AccountSidebarNav pathname={pathname} />
         </Stack>
 
@@ -209,19 +203,19 @@ const DashboardPage = () => {
                   preferences, and we&apos;ll handle the rest.
                 </Text>
               </Stack>
-          <ChakraLink
-            display="inline-flex"
-            alignItems="center"
-            gap={2}
-            color={PRIMARY_COLOR}
-            fontWeight="bold"
-            as={NextLink}
-            href="/TripPlanner"
-            _hover={{
-              textDecoration: "none",
-              "& svg": { transform: "translateX(4px)" },
-            }}
-          >
+              <ChakraLink
+                display="inline-flex"
+                alignItems="center"
+                gap={2}
+                color={PRIMARY_COLOR}
+                fontWeight="bold"
+                as={NextLink}
+                href="/TripPlanner"
+                _hover={{
+                  textDecoration: "none",
+                  "& svg": { transform: "translateX(4px)" },
+                }}
+              >
                 <Text>Start Planning</Text>
                 <Icon as={MdArrowForward} transition="transform 0.3s ease" />
               </ChakraLink>
