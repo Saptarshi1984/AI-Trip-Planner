@@ -7,6 +7,13 @@ WanderWise is an AI-assisted travel companion built with Next.js 15 and Chakra U
 
 While the AI itinerary engine and trip-planning workspace are still being wired, the project already demonstrates the design system, state management, and Appwrite integration that will power the final experience.
 
+## Use Cases
+- Plan a weekend getaway with AI-curated itineraries that match budget, duration, and personal interests.
+- Coordinate group travel by sharing saved itineraries and capturing preferences from every traveller.
+- Build business trip agendas that balance meetings with recommended dining, lodging, and downtime options.
+- Explore new cities with real-time updates on attractions, weather, and transportation changes.
+- Save favourite destinations and revisit them later when planning larger vacations or multi-leg journeys.
+
 ## Current Experience
 - Responsive landing page with feature highlights and conversion-focused calls to action.
 - Email/password and Google OAuth sign-in powered by Appwrite, with session routing and guards.
