@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         ? `${startDate} to ${endDate}`
         : startDate || endDate || "Dates not provided";
 
-    const itinerary = await TripPlanningAgent(
+    const itenery = await TripPlanningAgent(
       startLocation?.trim() || "User location not provided",
       destination.trim(),
       travelers,
@@ -46,8 +46,8 @@ export async function POST(req: Request) {
       budget,
       interests.trim() || "Create a comprehensive itinerary."
     );
-
-    return NextResponse.json({ ok: true, itinerary }, { status: 200 });
+    console.log('this in route:',itenery);
+    return NextResponse.json({ ok: true, itenery }, { status: 200 });
   } catch (err) {
     console.error("Trip agent error:", err);
     return NextResponse.json(

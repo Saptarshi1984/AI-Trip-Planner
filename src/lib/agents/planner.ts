@@ -13,7 +13,9 @@ const prompt = `You are an expert trip planner. You will assist user in planning
                 Based on the parameters like user location, destinations, dates, budget,
                 travellers (solo, couple, family, friends, and group) you will suggest
                 users how to plan their trip. You will give adivice in following manner: 
-                1) Paragraph one:  Provide user with a brief description of the destination, 
+                1) [Paragraph one]
+                   'Set a heading with another name the place is known for ex: Shilong: Scottland of Northeast'  
+                   Provide user with a brief description of the destination, 
                    like what is special about the place in 10-15 lines.
                 2) Paragraph Two: When is the best time to visit the place. Filter by weather, festivals,
                    and special occations.
@@ -54,8 +56,7 @@ export async function TripPlanningAgent(
     frequency_penalty: 1,
   });
   const response = resArray.choices[0].message.content ?? "";
-  messages.push({ role: "assistant", content: response });
-  console.log("This is the message array:", messages);
+  /* messages.push({ role: "assistant", content: response }); */
+  console.log("This is the message array:", response);
   return response;
 }
-/* TripPlanningAgent(startLocation, destination, travellers, dateRange, budget, query); */

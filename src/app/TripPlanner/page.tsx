@@ -22,7 +22,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
-
+import IteneryResponseCard from "@/components/ux/IteneryResponseCard";
 const PRIMARY_COLOR = "#13a4ec";
 
 type TripPlannerForm = {
@@ -49,7 +49,7 @@ const TripPlannerPage = () => {
 
   const [formState, setFormState] = useState<TripPlannerForm>(defaultForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [itenery, setItenery] = useState<string | ''>('');
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
@@ -127,7 +127,7 @@ const TripPlannerPage = () => {
       const payload = {
         ...formState,
         destination: formState.destination.trim(),        
-        travellers: formState.travelers.trim(),
+        travelers: formState.travelers.trim(),
         startDate: formState.startDate.trim(),
         endDate: formState.endDate.trim(),
         budget: formState.budget.trim(),
@@ -146,8 +146,10 @@ const TripPlannerPage = () => {
         throw new Error(`Request failed with status ${res.status}`);
       }
 
-      const data = await res.json();
-      console.log("Trip agent response:", data);
+      const data = await res.json() as { ok?: boolean; itenery?: string; error?: string };
+      
+      setItenery(data.itenery ?? "");
+      console.log("Trip agent response:", itenery);
     } catch (error) {
       console.log("An error occured in AI response!");
       console.log(error);
@@ -367,8 +369,8 @@ const TripPlannerPage = () => {
             </Stack>
           </Box>
 
-          <Box bg={cardBg} rounded="2xl" shadow="md" p={{ base: 6, md: 10 }}>
-            <Stack>
+        {itenery == '' ? (   <Box bg={cardBg} rounded="2xl" shadow="md" p={{ base: 6, md: 10 }}>
+           <Stack>
               <Stack>
                 <Heading size="md">What happens next?</Heading>
                 <Text color={subtleColor}>
@@ -426,10 +428,14 @@ const TripPlannerPage = () => {
                 </Button>
               </Flex>
             </Stack>
-          </Box>
+          </Box>)
+            : <Box><IteneryResponseCard message={itenery}/></Box> } 
+          
         </Stack>
       </Box>
+      
     </Flex>
+    
   );
 };
 
