@@ -21,9 +21,13 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
+import { account, tablesDB } from "@/lib/appwrite.client";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
 import IteneryResponseCard from "@/components/ux/IteneryResponseCard";
+
 const PRIMARY_COLOR = "#13a4ec";
+const DATABASE_ID = "68ea1c19002774b84c21";
+const TABLE_ID = "user_profiles";
 
 type TripPlannerForm = {
   destination: string;
@@ -97,7 +101,7 @@ const TripPlannerPage = () => {
   };
 
   useEffect(() => {
-    async function guardRoute() {
+    async function getCurrentUser() {
       const user = await checkAuthStatus();
 
       if (!user) {
@@ -105,7 +109,7 @@ const TripPlannerPage = () => {
       }
     }
 
-    void guardRoute();
+    void getCurrentUser();
   }, [router]);
 
   const handleChange =
@@ -121,11 +125,23 @@ const TripPlannerPage = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+     
+    //getting user location from user profile database
+    const user = await account.get();
+   
+    const row = await tablesDB.getRow({
+      databaseId: DATABASE_ID,
+      tableId: TABLE_ID,
+      rowId: user.$id,
+    })
+
+    const userLocation = row.location;
     setIsSubmitting(true);
 
     try {
       const payload = {
         ...formState,
+        startLocation: userLocation.trim(),
         destination: formState.destination.trim(),        
         travelers: formState.travelers.trim(),
         startDate: formState.startDate.trim(),
