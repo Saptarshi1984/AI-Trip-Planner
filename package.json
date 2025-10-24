@@ -1,5 +1,6 @@
 {
   "name": "ai-trip-planner",
+  "author": "Saptarshi Mondal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
