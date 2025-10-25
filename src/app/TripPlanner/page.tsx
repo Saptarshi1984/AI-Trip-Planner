@@ -230,7 +230,7 @@ const TripPlannerPage = () => {
             </Text>
           </Stack>
 
-          <Box bg={cardBg} rounded="2xl" shadow="xl" p={{ base: 6, md: 10 }}>
+          {itenery == '' && (<Box bg={cardBg} rounded="2xl" shadow="xl" p={{ base: 6, md: 10 }}>
             <Stack>
               <Stack>
                 <Heading size="md">Trip preferences</Heading>
@@ -383,7 +383,7 @@ const TripPlannerPage = () => {
                 </Stack>
               </form>
             </Stack>
-          </Box>
+          </Box>)}
 
         {itenery == '' ? (   <Box bg={cardBg} rounded="2xl" shadow="md" p={{ base: 6, md: 10 }}>
            <Stack>

@@ -9,29 +9,62 @@ const budget= 'Balanced'
 const query= 'Give me a detailted trip plan for Meghalaya, for 10 days itenery.'
 
 
-const prompt = `You are an expert trip planner. You will assist user in planning their trips.
-                Based on the parameters like user location, destinations, dates, budget,
-                travellers (solo, couple, family, friends, and group) you will suggest
-                users how to plan their trip. You will give adivice in following manner: 
-                1) [Paragraph one]
-                   'Set a heading with another name the place is known for ex: Shilong: Scottland of Northeast'\n  
-                   Provide user with a brief description of the destination, 
-                   like what is special about the place in 10-15 lines.
-                2) [Paragraph Two]
-                   'Set heading to show best time to visit, ex: Best time to Visit-[Oct - Mar]-[Name of festivals, Activities]' 
-                   When is the best time to visit the place. Filter by weather, festivals,
-                   and special occations.
-                3) [Paragraph Three]
-                   'Set heading like this: How to Reach?'                   
-                   How to reach the place from the user current location. Provide all the
-                   possible options available. Separate all options like by road, by train, by flight, and
-                   by any other means if available with corresponding sub-heading like: 'By Flight', 'By Train', and 'By Road'.
-                4) [Paragraph four]
-                   'Set heading like: Popular Activities and Sightseeings'
-                   Suggests activities to the user that can be enjoyed based on the dates given.
-                5) [Paragraph five]
-                   'Set headings like Where to stay?'
-                   Suggest best stays like hotels, Airbnb, hostels based on the travellers.`;
+const prompt = `You are an expert trip planner. Follow the structure and formatting rules EXACTLY.
+
+STYLE & FORMATTING
+- Use Markdown.
+- All section titles must be H2 (##).
+- Use H3 (###) for sub-sections like "By Flight", "By Train", "By Road".
+- IMPORTANT: Wrap every occurrence of names of places, locations, landmarks, neighborhoods, routes, airports, stations, festivals, events, activities, and attractions in italics using underscores, e.g., _Shillong_, _Umiam Lake_, _Hornbill Festival_, _paragliding_. Do not italicize generic words like “hotel”, “weather”, “budget” unless they are part of a specific proper name.
+- Keep language concise, friendly, and practical.
+
+INPUT PARAMETERS
+- user_location
+- destination
+- dates (or date range)
+- budget (range or rough)
+- travellers (solo | couple | family | friends | group)
+- preferences (optional: nature, history, adventure, food, culture, slow travel, etc.)
+
+STRUCTURE (produce ALL sections even if you must say “Not available”)
+1) ## {Destination Nickname/Moniker} [This is a Heading] (e.g., _Shillong_: Scotland of the Northeast).
+   - First line: “{Destination}”
+   - Then a brief destination overview (10–15 lines max). Focus on what’s special: geography, vibe, highlights, and who it suits (based on travellers). Italicize all named places, landmarks, and activities.
+
+2) ## Best Time to Visit [This is a Heading]
+   - Heading format: “Best Time to Visit — [Month–Month] — [_Festivals_ / _Activities_]”
+   - Explain ideal months and why (weather, crowd levels, pricing).
+   - Call out key festivals/events and seasonal activities in italics, e.g., _Shad Suk Mynsiem_, _trekking_.
+
+3) ## How to Reach? [This is a Heading]
+   - Tailor from ${startLocation} to ${destination}.
+   - ### By Flight [This is a Sub-Heading]
+     - Nearest airports in italics (e.g., _Lokpriya Gopinath Bordoloi International Airport_). Mention typical routes, durations, and tips.
+   - ### By Train [This is a Sub-Heading]
+     - Nearest major stations in italics, typical trains/lines in italics, transfer notes.
+   - ### By Road [This is a Sub-Heading]
+     - Major highways in italics, approximate drive times, road conditions, scenic stops in italics.
+   - (If applicable) ### By Bus / Ferry / Other
+     - Key operators/ports in italics and timing.
+
+4) ## Popular Activities & Sightseeing [This is a Heading]
+   - Curate 6–12 top items suited to the given dates and traveller type.
+   - For each item: name in italics + 1–2 lines on why it’s worth it, best time of day, and any booking tip.
+   - Group by theme if helpful (e.g., “Nature”, “Culture”, “Adventure”).
+
+5) ## Where to Stay? [This is a Heading]
+   - Recommend 3–6 options across budget tiers (${budget}).
+   - For each: neighborhood/area in italics, property type (hotel/hostel/Airbnb), why it suits the travellers, and proximity to key spots in italics.
+   - Add quick safety or convenience tips.
+
+TONE & CONSTRAINTS
+- Be specific and actionable (distances, durations, typical costs if known; otherwise give ranges).
+- Prefer short paragraphs and bullet points.
+- Do not invent facts. If uncertain, say “Not available” or “Varies; check locally.”
+- Keep total output under ~900 words unless the user asks for more.
+
+NOW PRODUCE THE ITINERARY using the provided inputs.
+`;
       
 
 const messages: ChatCompletionCreateParams["messages"] = [
@@ -60,7 +93,7 @@ export async function TripPlanningAgent(
     model: "gpt-3.5-turbo",
     messages,
     temperature: 0.5,
-    max_completion_tokens: 400,
+    max_completion_tokens: 700,
     frequency_penalty: 1,
   });
   const response = resArray.choices[0].message.content ?? "";
