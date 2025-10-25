@@ -17,17 +17,19 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  
 } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
-import { account, tablesDB } from "@/lib/appwrite.client";
+import { account, tablesDB, ID } from "@/lib/appwrite.client";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
 import IteneryResponseCard from "@/components/ux/IteneryResponseCard";
 
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
+const ITINERARY_TABLE_ID = "user_iteneries";
 
 type TripPlannerForm = {
   destination: string;
@@ -50,10 +52,12 @@ const defaultForm: TripPlannerForm = {
 const TripPlannerPage = () => {
   const router = useRouter();
   const pathname = usePathname();
+  
 
   const [formState, setFormState] = useState<TripPlannerForm>(defaultForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [itenery, setItenery] = useState<string | ''>('');
+  const [isSavingItinerary, setIsSavingItinerary] = useState(false);
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
@@ -125,6 +129,8 @@ const TripPlannerPage = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if(!formState.destination) return;
      
     //getting user location from user profile database
     const user = await account.get();
@@ -171,6 +177,55 @@ const TripPlannerPage = () => {
       console.log(error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelItenery = () => {
+    setItenery("");
+  };
+
+  const handleSaveItenery = async (content: string) => {
+    if (!content || isSavingItinerary) {
+      return;
+    }
+
+    //getting user location from user profile database
+    const user = await account.get();
+   
+    const row = await tablesDB.getRow({
+      databaseId: DATABASE_ID,
+      tableId: TABLE_ID,
+      rowId: user.$id,
+    })
+
+    const userLocation = row.location;
+
+    try {
+      setIsSavingItinerary(true);
+      const user = await account.get();
+
+      await tablesDB.createRow({
+        databaseId: DATABASE_ID,
+        tableId: ITINERARY_TABLE_ID,
+        rowId: ID.unique(),
+        data: {
+          itenery: typeof content === "string" ? content : String(content),
+          startLocation: userLocation.trim(),
+          destination: formState.destination.trim() || "Custom itinerary",
+          startDate: formState.startDate.trim(),
+          endDate: formState.endDate.trim(),
+          travellers: formState.travelers.trim(),
+          budget: formState.budget.trim(),
+          interests: formState.interests.trim(),
+        },
+      });
+
+      
+    } catch (error) {
+      console.error("Failed to save itinerary", error);
+     
+    } finally {
+      setIsSavingItinerary(false);
     }
   };
 
@@ -445,7 +500,16 @@ const TripPlannerPage = () => {
               </Flex>
             </Stack>
           </Box>)
-            : <Box><IteneryResponseCard message={itenery}/></Box> } 
+            : (
+              <Box>
+                <IteneryResponseCard
+                  message={itenery}
+                  onSave={handleSaveItenery}
+                  onCancel={handleCancelItenery}
+                  isSaving={isSavingItinerary}
+                />
+              </Box>
+            ) } 
           
         </Stack>
       </Box>
