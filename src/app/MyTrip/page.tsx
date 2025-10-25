@@ -73,7 +73,7 @@ const MyTripPage = () => {
           shadow="xl"
           p={{ base: 8, md: 16 }}
         >
-          <Stack spacing={6} textAlign="center" maxW="28rem">
+          <Stack  textAlign="center" maxW="28rem">
             <Heading size="lg">You don&apos;t have a trip yet.</Heading>
             <Text color={subtleColor}>
               Start your first itinerary to see it appear here.
