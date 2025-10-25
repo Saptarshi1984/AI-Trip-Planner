@@ -133,12 +133,12 @@ const TripPlannerPage = () => {
     if(!formState.destination) return;
      
     //getting user location from user profile database
-    const user = await account.get();
+    const accountUser = await account.get();
    
     const row = await tablesDB.getRow({
       databaseId: DATABASE_ID,
       tableId: TABLE_ID,
-      rowId: user.$id,
+      rowId: accountUser.$id,
     })
 
     const userLocation = row.location;
@@ -190,25 +190,25 @@ const TripPlannerPage = () => {
     }
 
     //getting user location from user profile database
-    const user = await account.get();
+    const accountUser = await account.get();
    
     const row = await tablesDB.getRow({
       databaseId: DATABASE_ID,
       tableId: TABLE_ID,
-      rowId: user.$id,
+      rowId: accountUser.$id,
     })
 
     const userLocation = row.location;
 
     try {
       setIsSavingItinerary(true);
-      const user = await account.get();
 
       await tablesDB.createRow({
         databaseId: DATABASE_ID,
         tableId: ITINERARY_TABLE_ID,
         rowId: ID.unique(),
         data: {
+          userId: accountUser.$id,
           itenery: typeof content === "string" ? content : String(content),
           startLocation: userLocation.trim(),
           destination: formState.destination.trim() || "Custom itinerary",
@@ -217,6 +217,7 @@ const TripPlannerPage = () => {
           travellers: formState.travelers.trim(),
           budget: formState.budget.trim(),
           interests: formState.interests.trim(),
+          createdAt: new Date().toISOString(),
         },
       });
 

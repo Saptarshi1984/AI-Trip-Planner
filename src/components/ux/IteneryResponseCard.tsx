@@ -87,7 +87,7 @@ const IteneryResponseCard = ({
               variant="outline"
               colorPalette="gray"
               onClick={onCancel}
-              
+              disabled={!onCancel || isSaving}
             >
               Cancel
             </Button>
@@ -95,8 +95,8 @@ const IteneryResponseCard = ({
               variant="solid"
               colorPalette="orange"
               onClick={() => onSave?.(message)}
-              
-              
+              disabled={!onSave}
+              loading={isSaving}
             >
               Save
             </Button>
