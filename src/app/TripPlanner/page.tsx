@@ -190,12 +190,12 @@ const TripPlannerPage = () => {
     }
 
     //getting user location from user profile database
-    const accountUser = await account.get();
+    const user = await account.get();
    
     const row = await tablesDB.getRow({
       databaseId: DATABASE_ID,
       tableId: TABLE_ID,
-      rowId: accountUser.$id,
+      rowId: user.$id,
     })
 
     const userLocation = row.location;
@@ -208,7 +208,7 @@ const TripPlannerPage = () => {
         tableId: ITINERARY_TABLE_ID,
         rowId: ID.unique(),
         data: {
-          userId: accountUser.$id,
+          userId: user.$id,
           itenery: typeof content === "string" ? content : String(content),
           startLocation: userLocation.trim(),
           destination: formState.destination.trim() || "Custom itinerary",
@@ -216,8 +216,7 @@ const TripPlannerPage = () => {
           endDate: formState.endDate.trim(),
           travellers: formState.travelers.trim(),
           budget: formState.budget.trim(),
-          interests: formState.interests.trim(),
-          createdAt: new Date().toISOString(),
+          interests: formState.interests.trim(),          
         },
       });
 

@@ -39,7 +39,7 @@ export const ACCOUNT_NAV_ITEMS: ReadonlyArray<AccountSidebarNavItem> = [
     href: "/TripPlanner",
   },
   {
-    label: "My Trip",
+    label: "My Trips",
     icon: MdBookmarkBorder,
     href: "/MyTrip",
   },
