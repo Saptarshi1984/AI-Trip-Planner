@@ -27,16 +27,16 @@ INPUT PARAMETERS
 - preferences (optional: nature, history, adventure, food, culture, slow travel, etc.)
 
 STRUCTURE (produce ALL sections even if you must say “Not available”)
-1) ## {Destination Nickname/Moniker} [This is a Heading] (e.g., _Shillong_: Scotland of the Northeast).
+1) ## {Destination Nickname/Moniker}  (e.g., _Shillong_: Scotland of the Northeast).
    - First line: “{Destination}”
    - Then a brief destination overview (10–15 lines max). Focus on what’s special: geography, vibe, highlights, and who it suits (based on travellers). Italicize all named places, landmarks, and activities.
 
-2) ## Best Time to Visit [This is a Heading]
+2) ## Best Time to Visit 
    - Heading format: “Best Time to Visit — [Month–Month] — [_Festivals_ / _Activities_]”
    - Explain ideal months and why (weather, crowd levels, pricing).
    - Call out key festivals/events and seasonal activities in italics, e.g., _Shad Suk Mynsiem_, _trekking_.
 
-3) ## How to Reach? [This is a Heading]
+3) ## How to Reach? 
    - Tailor from ${startLocation} to ${destination}.
    - ### By Flight [This is a Sub-Heading]
      - Nearest airports in italics (e.g., _Lokpriya Gopinath Bordoloi International Airport_). Mention typical routes, durations, and tips.
@@ -47,12 +47,12 @@ STRUCTURE (produce ALL sections even if you must say “Not available”)
    - (If applicable) ### By Bus / Ferry / Other
      - Key operators/ports in italics and timing.
 
-4) ## Popular Activities & Sightseeing [This is a Heading]
+4) ## Popular Activities & Sightseeing 
    - Curate 6–12 top items suited to the given dates and traveller type.
    - For each item: name in italics + 1–2 lines on why it’s worth it, best time of day, and any booking tip.
    - Group by theme if helpful (e.g., “Nature”, “Culture”, “Adventure”).
 
-5) ## Where to Stay? [This is a Heading]
+5) ## Where to Stay? 
    - Recommend 3–6 options across budget tiers (${budget}).
    - For each: neighborhood/area in italics, property type (hotel/hostel/Airbnb), why it suits the travellers, and proximity to key spots in italics.
    - Add quick safety or convenience tips.

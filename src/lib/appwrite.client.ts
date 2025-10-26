@@ -11,4 +11,5 @@ client
 export const account = new Account(client);
 export const tablesDB = new TablesDB(client);
 export const storage = new Storage(client);
+
 export { ID } from "appwrite";

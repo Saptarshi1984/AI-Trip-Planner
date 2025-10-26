@@ -17,7 +17,6 @@ import {
   SimpleGrid,
   Stack,
   Text,
-  
 } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
@@ -25,6 +24,7 @@ import { checkAuthStatus } from "@/lib/appwrite.service";
 import { account, tablesDB, ID } from "@/lib/appwrite.client";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
 import IteneryResponseCard from "@/components/ux/IteneryResponseCard";
+import GoogleImageSearch from "@/components/ux/GoogleImageSearch";
 
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
@@ -52,11 +52,10 @@ const defaultForm: TripPlannerForm = {
 const TripPlannerPage = () => {
   const router = useRouter();
   const pathname = usePathname();
-  
 
   const [formState, setFormState] = useState<TripPlannerForm>(defaultForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [itenery, setItenery] = useState<string | ''>('');
+  const [itenery, setItenery] = useState<string | "">("");
   const [isSavingItinerary, setIsSavingItinerary] = useState(false);
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
@@ -130,16 +129,16 @@ const TripPlannerPage = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if(!formState.destination) return;
-     
+    if (!formState.destination) return;
+
     //getting user location from user profile database
     const accountUser = await account.get();
-   
+
     const row = await tablesDB.getRow({
       databaseId: DATABASE_ID,
       tableId: TABLE_ID,
       rowId: accountUser.$id,
-    })
+    });
 
     const userLocation = row.location;
     setIsSubmitting(true);
@@ -148,7 +147,7 @@ const TripPlannerPage = () => {
       const payload = {
         ...formState,
         startLocation: userLocation.trim(),
-        destination: formState.destination.trim(),        
+        destination: formState.destination.trim(),
         travelers: formState.travelers.trim(),
         startDate: formState.startDate.trim(),
         endDate: formState.endDate.trim(),
@@ -168,8 +167,12 @@ const TripPlannerPage = () => {
         throw new Error(`Request failed with status ${res.status}`);
       }
 
-      const data = await res.json() as { ok?: boolean; itenery?: string; error?: string };
-      
+      const data = (await res.json()) as {
+        ok?: boolean;
+        itenery?: string;
+        error?: string;
+      };
+
       setItenery(data.itenery ?? "");
       console.log("Trip agent response:", itenery);
     } catch (error) {
@@ -191,12 +194,12 @@ const TripPlannerPage = () => {
 
     //getting user location from user profile database
     const user = await account.get();
-   
+
     const row = await tablesDB.getRow({
       databaseId: DATABASE_ID,
       tableId: TABLE_ID,
       rowId: user.$id,
-    })
+    });
 
     const userLocation = row.location;
 
@@ -216,14 +219,11 @@ const TripPlannerPage = () => {
           endDate: formState.endDate.trim(),
           travellers: formState.travelers.trim(),
           budget: formState.budget.trim(),
-          interests: formState.interests.trim(),          
+          interests: formState.interests.trim(),
         },
       });
-
-      
     } catch (error) {
       console.error("Failed to save itinerary", error);
-     
     } finally {
       setIsSavingItinerary(false);
     }
@@ -277,245 +277,260 @@ const TripPlannerPage = () => {
             >
               Plan a Trip
             </Badge>
-            <Heading size="2xl">Design your next adventure</Heading>
+            <Heading size="2xl">{itenery == '' ? 'Design your next adventure' : `Your AI crafted Iteneries for ${formState.destination}` }</Heading>
             <Text color={subtleColor} maxW="40rem">
-              Share a few details about where you would like to go and what you
+              { itenery == '' ? `Share a few details about where you would like to go and what you
               want to experience. Our AI itinerary builder will handle the rest,
-              from finding highlights to balancing your schedule.
+              from finding highlights to balancing your schedule.` : `If you are not satisfied with the results try different keywords!` }
             </Text>
           </Stack>
 
-          {itenery == '' && (<Box bg={cardBg} rounded="2xl" shadow="xl" p={{ base: 6, md: 10 }}>
-            <Stack>
+          {itenery == "" && (
+            <Box bg={cardBg} rounded="2xl" shadow="xl" p={{ base: 6, md: 10 }}>
               <Stack>
-                <Heading size="md">Trip preferences</Heading>
-                <Text color={subtleColor}>
-                  The more detail you share, the more tailored your plan will
-                  be.
-                </Text>
-              </Stack>
-
-              <form onSubmit={handleSubmit}>
                 <Stack>
-                  <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
-                    <Stack>
-                      <Text
-                        fontSize="sm"
-                        textTransform="uppercase"
-                        color={subtleColor}
-                      >
-                        Destination
-                      </Text>
-                      <input
-                        required
-                        value={formState.destination}
-                        onChange={handleChange("destination")}
-                        placeholder="e.g. Kyoto, Japan"
-                        style={baseFieldStyles}
-                        onFocus={handleFieldFocus}
-                        onBlur={handleFieldBlur}
-                      />
-                    </Stack>
+                  <Heading size="md">Trip preferences</Heading>
+                  <Text color={subtleColor}>
+                    The more detail you share, the more tailored your plan will
+                    be.
+                  </Text>
+                </Stack>
 
-                    <Stack>
-                      <Text
-                        fontSize="sm"
-                        textTransform="uppercase"
-                        color={subtleColor}
-                      >
-                        Travelers
-                      </Text>
-                      <select
-                        value={formState.travelers}
-                        onChange={handleChange("travelers")}
-                        style={{ ...baseFieldStyles, paddingRight: "2.75rem" }}
-                        onFocus={handleFieldFocus}
-                        onBlur={handleFieldBlur}
-                      >
-                        <option value="solo">Solo</option>
-                        <option value="couple">Couple</option>
-                        <option value="family">Family</option>
-                        <option value="friends">Friends</option>
-                      </select>
-                    </Stack>
-
-                    <Stack>
-                      <Text
-                        fontSize="sm"
-                        textTransform="uppercase"
-                        color={subtleColor}
-                      >
-                        Start date
-                      </Text>
-                      <input
-                        type="date"
-                        value={formState.startDate}
-                        onChange={handleChange("startDate")}
-                        style={baseFieldStyles}
-                        onFocus={handleFieldFocus}
-                        onBlur={handleFieldBlur}
-                      />
-                    </Stack>
-
-                    <Stack>
-                      <Text
-                        fontSize="sm"
-                        textTransform="uppercase"
-                        color={subtleColor}
-                      >
-                        End date
-                      </Text>
-                      <input
-                        type="date"
-                        value={formState.endDate}
-                        onChange={handleChange("endDate")}
-                        style={baseFieldStyles}
-                        onFocus={handleFieldFocus}
-                        onBlur={handleFieldBlur}
-                      />
-                    </Stack>
-
-                    <Stack>
-                      <Text
-                        fontSize="sm"
-                        textTransform="uppercase"
-                        color={subtleColor}
-                      >
-                        Budget
-                      </Text>
-                      <select
-                        value={formState.budget}
-                        onChange={handleChange("budget")}
-                        style={{ ...baseFieldStyles, paddingRight: "2.75rem" }}
-                        onFocus={handleFieldFocus}
-                        onBlur={handleFieldBlur}
-                      >
-                        <option value="saver">Saver</option>
-                        <option value="medium">Balanced</option>
-                        <option value="premium">Premium</option>
-                      </select>
-                    </Stack>
-                  </SimpleGrid>
-
+                <form onSubmit={handleSubmit}>
                   <Stack>
-                    <Text
-                      fontSize="sm"
-                      textTransform="uppercase"
-                      color={subtleColor}
-                    >
-                      Must-see experiences or notes
-                    </Text>
-                    <textarea
-                      value={formState.interests}
-                      onChange={handleChange("interests")}
-                      placeholder="Tell us what you love - food, museums, hidden cafes, local tours..."
-                      style={{
-                        ...baseFieldStyles,
-                        minHeight: "8rem",
-                        resize: "vertical",
-                      }}
-                      onFocus={handleFieldFocus}
-                      onBlur={handleFieldBlur}
-                    />
+                    <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+                      <Stack>
+                        <Text
+                          fontSize="sm"
+                          textTransform="uppercase"
+                          color={subtleColor}
+                        >
+                          Destination
+                        </Text>
+                        <input
+                          required
+                          value={formState.destination}
+                          onChange={handleChange("destination")}
+                          placeholder="e.g. Kyoto, Japan"
+                          style={baseFieldStyles}
+                          onFocus={handleFieldFocus}
+                          onBlur={handleFieldBlur}
+                        />
+                      </Stack>
+
+                      <Stack>
+                        <Text
+                          fontSize="sm"
+                          textTransform="uppercase"
+                          color={subtleColor}
+                        >
+                          Travelers
+                        </Text>
+                        <select
+                          value={formState.travelers}
+                          onChange={handleChange("travelers")}
+                          style={{
+                            ...baseFieldStyles,
+                            paddingRight: "2.75rem",
+                          }}
+                          onFocus={handleFieldFocus}
+                          onBlur={handleFieldBlur}
+                        >
+                          <option value="solo">Solo</option>
+                          <option value="couple">Couple</option>
+                          <option value="family">Family</option>
+                          <option value="friends">Friends</option>
+                        </select>
+                      </Stack>
+
+                      <Stack>
+                        <Text
+                          fontSize="sm"
+                          textTransform="uppercase"
+                          color={subtleColor}
+                        >
+                          Start date
+                        </Text>
+                        <input
+                          type="date"
+                          value={formState.startDate}
+                          onChange={handleChange("startDate")}
+                          style={baseFieldStyles}
+                          onFocus={handleFieldFocus}
+                          onBlur={handleFieldBlur}
+                        />
+                      </Stack>
+
+                      <Stack>
+                        <Text
+                          fontSize="sm"
+                          textTransform="uppercase"
+                          color={subtleColor}
+                        >
+                          End date
+                        </Text>
+                        <input
+                          type="date"
+                          value={formState.endDate}
+                          onChange={handleChange("endDate")}
+                          style={baseFieldStyles}
+                          onFocus={handleFieldFocus}
+                          onBlur={handleFieldBlur}
+                        />
+                      </Stack>
+
+                      <Stack>
+                        <Text
+                          fontSize="sm"
+                          textTransform="uppercase"
+                          color={subtleColor}
+                        >
+                          Budget
+                        </Text>
+                        <select
+                          value={formState.budget}
+                          onChange={handleChange("budget")}
+                          style={{
+                            ...baseFieldStyles,
+                            paddingRight: "2.75rem",
+                          }}
+                          onFocus={handleFieldFocus}
+                          onBlur={handleFieldBlur}
+                        >
+                          <option value="saver">Saver</option>
+                          <option value="medium">Balanced</option>
+                          <option value="premium">Premium</option>
+                        </select>
+                      </Stack>
+                    </SimpleGrid>
+
+                    <Stack>
+                      <Text
+                        fontSize="sm"
+                        textTransform="uppercase"
+                        color={subtleColor}
+                      >
+                        Must-see experiences or notes
+                      </Text>
+                      <textarea
+                        value={formState.interests}
+                        onChange={handleChange("interests")}
+                        placeholder="Tell us what you love - food, museums, hidden cafes, local tours..."
+                        style={{
+                          ...baseFieldStyles,
+                          minHeight: "8rem",
+                          resize: "vertical",
+                        }}
+                        onFocus={handleFieldFocus}
+                        onBlur={handleFieldBlur}
+                      />
+                    </Stack>
+
+                    <Flex justify="flex-end">
+                      <Button
+                        type="submit"
+                        bg={PRIMARY_COLOR}
+                        color="white"
+                        rounded="full"
+                        px={{ base: 6, md: 8 }}
+                        py={{ base: 3, md: 4 }}
+                        fontWeight="semibold"
+                        _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
+                        _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
+                        loadingText="Planning"
+                      >
+                        Generate itinerary
+                      </Button>
+                    </Flex>
                   </Stack>
-
-                  <Flex justify="flex-end">
-                    <Button
-                      type="submit"
-                      bg={PRIMARY_COLOR}
-                      color="white"
-                      rounded="full"
-                      px={{ base: 6, md: 8 }}
-                      py={{ base: 3, md: 4 }}
-                      fontWeight="semibold"
-                      _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
-                      _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
-                      loadingText="Planning"
-                    >
-                      Generate itinerary
-                    </Button>
-                  </Flex>
-                </Stack>
-              </form>
-            </Stack>
-          </Box>)}
-
-        {itenery == '' ? (   <Box bg={cardBg} rounded="2xl" shadow="md" p={{ base: 6, md: 10 }}>
-           <Stack>
-              <Stack>
-                <Heading size="md">What happens next?</Heading>
-                <Text color={subtleColor}>
-                  You will receive a draft itinerary that you can tweak and
-                  share. Here is what our AI focuses on when building your trip.
-                </Text>
+                </form>
               </Stack>
+            </Box>
+          )}
 
-              <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
+          {itenery == "" ? (
+            <Box bg={cardBg} rounded="2xl" shadow="md" p={{ base: 6, md: 10 }}>
+              <Stack>
                 <Stack>
-                  <Heading size="sm">Curated highlights</Heading>
+                  <Heading size="md">What happens next?</Heading>
                   <Text color={subtleColor}>
-                    Discover iconic landmarks, hidden gems, and local favorites
-                    tailored to your interests.
+                    You will receive a draft itinerary that you can tweak and
+                    share. Here is what our AI focuses on when building your
+                    trip.
                   </Text>
                 </Stack>
-                <Stack>
-                  <Heading size="sm">Balanced pacing</Heading>
-                  <Text color={subtleColor}>
-                    Each day is planned with a realistic mix of activities,
-                    meals, and downtime so you can enjoy every moment.
-                  </Text>
-                </Stack>
-                <Stack>
-                  <Heading size="sm">Smart logistics</Heading>
-                  <Text color={subtleColor}>
-                    Recommendations include travel times and neighborhood tips
-                    to keep your journey smooth from start to finish.
-                  </Text>
-                </Stack>
-              </SimpleGrid>
 
-              <Separator borderColor={dividerColor} />
+                <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
+                  <Stack>
+                    <Heading size="sm">Curated highlights</Heading>
+                    <Text color={subtleColor}>
+                      Discover iconic landmarks, hidden gems, and local
+                      favorites tailored to your interests.
+                    </Text>
+                  </Stack>
+                  <Stack>
+                    <Heading size="sm">Balanced pacing</Heading>
+                    <Text color={subtleColor}>
+                      Each day is planned with a realistic mix of activities,
+                      meals, and downtime so you can enjoy every moment.
+                    </Text>
+                  </Stack>
+                  <Stack>
+                    <Heading size="sm">Smart logistics</Heading>
+                    <Text color={subtleColor}>
+                      Recommendations include travel times and neighborhood tips
+                      to keep your journey smooth from start to finish.
+                    </Text>
+                  </Stack>
+                </SimpleGrid>
 
-              <Flex
-                direction={{ base: "column", md: "row" }}
-                justify="space-between"
-                align={{ base: "flex-start", md: "center" }}
-                gap={4}
-              >
-                <Stack>
-                  <Heading size="sm">Need help from a human expert?</Heading>
-                  <Text color={subtleColor}>
-                    Our travel specialists can review your draft itinerary and
-                    add bespoke recommendations.
-                  </Text>
-                </Stack>
-                <Button
-                  variant="outline"
-                  rounded="full"
-                  px={{ base: 6, md: 8 }}
-                  onClick={() => router.push("/Profile")}
+                <Separator borderColor={dividerColor} />
+
+                <Flex
+                  direction={{ base: "column", md: "row" }}
+                  justify="space-between"
+                  align={{ base: "flex-start", md: "center" }}
+                  gap={4}
                 >
-                  Connect with support
-                </Button>
-              </Flex>
-            </Stack>
-          </Box>)
-            : (
-              <Box>
-                <IteneryResponseCard
-                  message={itenery}
-                  onSave={handleSaveItenery}
-                  onCancel={handleCancelItenery}
-                  isSaving={isSavingItinerary}
+                  <Stack>
+                    <Heading size="sm">Need help from a human expert?</Heading>
+                    <Text color={subtleColor}>
+                      Our travel specialists can review your draft itinerary and
+                      add bespoke recommendations.
+                    </Text>
+                  </Stack>
+                  <Button
+                    variant="outline"
+                    rounded="full"
+                    px={{ base: 6, md: 8 }}
+                    onClick={() => router.push("/Profile")}
+                  >
+                    Connect with support
+                  </Button>
+                </Flex>
+              </Stack>
+            </Box>
+          ) : (
+            <Box>
+              <IteneryResponseCard
+                message={itenery}
+                onSave={handleSaveItenery}
+                onCancel={handleCancelItenery}
+                isSaving={isSavingItinerary}
+              />
+              <Separator />
+              {itenery && (
+                <GoogleImageSearch
+                  destination={formState.destination}
+                  ctaLabel="Search photos"
+                  placeholder="Search destinations or landmarks"
                 />
-              </Box>
-            ) } 
-          
+              )}
+            </Box>
+          )}
         </Stack>
       </Box>
-      
     </Flex>
-    
   );
 };
 

@@ -35,20 +35,20 @@ const components = {
     const { node, ...rest } = props;
     void node;
     return (
-      <Heading as="h2" size="xl" mt={7} mb={2} color={'cyan.400'} {...rest} />
+      <Heading as="h2" size="xl" mt={4}  color={'cyan.400'} {...rest} />
     );
   },
   h3: (props: MarkdownHeadingProps) => {
     const { node, ...rest } = props;
     void node;
     return (
-      <Heading as="h3" size="md" mt={6} mb={2} color={'orange.400'} {...rest} />
+      <Heading as="h3" size="md" mt={4}  color={'orange.400'} {...rest} />
     );
   },
   p: (props: MarkdownTextProps) => {
     const { node, ...rest } = props;
     void node;
-    return <Text lineHeight="tall" my={3} {...rest} />;
+    return <Text lineHeight="tall" my={1} {...rest} />;
   },
 };
 

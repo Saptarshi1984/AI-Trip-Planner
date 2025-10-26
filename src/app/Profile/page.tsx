@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { account, tablesDB } from "@/lib/appwrite.client";
+import {
+  useEffect,
+  useState,
+  useRef,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
+import { account, tablesDB, storage, ID } from "@/lib/appwrite.client";
+import { Permission, Role } from "appwrite";
 import {
   Input,
   Box,
@@ -14,6 +21,8 @@ import {
   Text,
   Link as ChakraLink,
 } from "@chakra-ui/react";
+import Image from "next/image";
+import { FaCamera } from "react-icons/fa";
 import NextLink from "next/link";
 import { MdEdit } from "react-icons/md";
 import { usePathname, useRouter } from "next/navigation";
@@ -29,7 +38,7 @@ type ProfileForm = {
   firstName: string;
   lastName: string;
   email: string;
-  /* profilePictureURL: string; */
+  profilePictureURL: string;
   phoneNumber: string;
   location: string;
 };
@@ -38,7 +47,7 @@ const PROFILE_FIELDS = [
   "firstName",
   "lastName",
   "email",
-  /* "profilePictureURL", */
+  "profilePictureURL",
   "phoneNumber",
   "location",
 ] as const;
@@ -52,7 +61,8 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [rowExists, setRowExists] = useState(false);
-
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [imageURL, setImageURL] = useState<string>("");
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
@@ -110,7 +120,6 @@ const ProfilePage = () => {
         rowId: user.$id,
       });
 
-
       const rowRecord = row as Record<string, string | null | undefined>;
       const nextProfile = Object.fromEntries(
         PROFILE_FIELDS.map((field) => [field, rowRecord[field] ?? ""])
@@ -118,6 +127,7 @@ const ProfilePage = () => {
 
       setProfile(nextProfile);
       setInitialProfile({ ...nextProfile });
+      setImageURL(nextProfile.profilePictureURL || "");
       setRowExists(true);
       return nextProfile;
     } catch (error) {
@@ -125,12 +135,11 @@ const ProfilePage = () => {
       setRowExists(false);
       setProfile(null);
       setInitialProfile(null);
+      setImageURL("");
       return null;
     } finally {
     }
   };
-
-
 
   const handleInputChange =
     (field: keyof ProfileForm) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +163,7 @@ const ProfilePage = () => {
           email: profile.email ?? "",
           phoneNumber: profile.phoneNumber ?? "",
           location: profile.location ?? "",
-          /* profilePictureURL: profile.profilePictureURL ?? "", */
+          profilePictureURL: profile.profilePictureURL ?? "",
         },
       });
 
@@ -208,9 +217,9 @@ const ProfilePage = () => {
           <AccountSidebarNav pathname={pathname} />
         </Stack>
 
-        <Stack >
+        <Stack>
           <Text fontWeight="bold">{displayName}</Text>
-          
+
           <ChakraLink
             as={NextLink}
             href="/Dashboard"
@@ -264,7 +273,6 @@ const ProfilePage = () => {
 
             <Separator borderColor={dividerColor} />
 
-            {/*  <UserProfileCard profileURL={profile?.profilePictureURL || "/noProfile.png"} /> */}
             <Heading size="md">Personal Information</Heading>
             <form onSubmit={handleSubmit}>
               <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 6 }}>
