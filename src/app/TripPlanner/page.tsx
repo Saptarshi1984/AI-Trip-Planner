@@ -94,7 +94,7 @@ const TripPlannerPage = () => {
     event.currentTarget.style.boxShadow = "0 0 0 1px rgba(19, 164, 236, 0.4)";
   };
 
-/*   const handleFieldBlur = (
+  /*   const handleFieldBlur = (
     event: FocusEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
@@ -277,11 +277,17 @@ const TripPlannerPage = () => {
             >
               Plan a Trip
             </Badge>
-            <Heading size="2xl">{itenery == '' ? 'Design your next adventure' : `Your AI crafted Iteneries for ${formState.destination}` }</Heading>
+            <Heading size="2xl">
+              {itenery == ""
+                ? "Design your next adventure"
+                : `Your AI crafted Iteneries for ${formState.destination}`}
+            </Heading>
             <Text color={subtleColor} maxW="40rem">
-              { itenery == '' ? `Share a few details about where you would like to go and what you
+              {itenery == ""
+                ? `Share a few details about where you would like to go and what you
               want to experience. Our AI itinerary builder will handle the rest,
-              from finding highlights to balancing your schedule.` : `If you are not satisfied with the results try different keywords!` }
+              from finding highlights to balancing your schedule.`
+                : `If you are not satisfied with the results try different keywords!`}
             </Text>
           </Stack>
 
@@ -375,7 +381,7 @@ const TripPlannerPage = () => {
                           onChange={handleChange("endDate")}
                           style={baseFieldStyles}
                           onFocus={handleFieldFocus}
-                         /*  onBlur={handleFieldBlur} */
+                          /*  onBlur={handleFieldBlur} */
                         />
                       </Stack>
 
@@ -521,11 +527,7 @@ const TripPlannerPage = () => {
               />
               <Separator />
               {itenery && (
-                <GoogleImageSearch
-                  destination={formState.destination}
-                  ctaLabel="Search photos"
-                  placeholder="Search destinations or landmarks"
-                />
+                <GoogleImageSearch destination={formState.destination} />
               )}
             </Box>
           )}
