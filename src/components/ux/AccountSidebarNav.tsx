@@ -1,14 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import {
-  Flex,
-  Icon,
-  Link as ChakraLink,
-  Stack,
-  Text,
-
-} from "@chakra-ui/react";
+import { Flex, Icon, Link, Stack, Text } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
 import { useColorModeValue } from "../ui/color-mode";
 import {
@@ -58,11 +51,13 @@ export const ACCOUNT_NAV_ITEMS: ReadonlyArray<AccountSidebarNavItem> = [
 type AccountSidebarNavProps = {
   pathname?: string | null;
   items?: ReadonlyArray<AccountSidebarNavItem>;
+  onClick?: () => void;
 };
 
 const AccountSidebarNav = ({
   pathname,
   items = ACCOUNT_NAV_ITEMS,
+  onClick,
 }: AccountSidebarNavProps) => {
   const navHoverBg = useColorModeValue(
     "rgba(19, 164, 236, 0.12)",
@@ -106,12 +101,13 @@ const AccountSidebarNav = ({
         }
 
         return (
-          <ChakraLink
+          <Link
             key={item.label}
             as={NextLink}
             href={item.href}
             display="flex"
             {...sharedProps}
+            onClick={onClick}
             _hover={{
               textDecoration: "none",
               bg: navHoverBg,
@@ -120,7 +116,7 @@ const AccountSidebarNav = ({
           >
             <Icon as={item.icon} boxSize={5} />
             <Text>{item.label}</Text>
-          </ChakraLink>
+          </Link>
         );
       })}
     </Stack>

@@ -94,14 +94,14 @@ const TripPlannerPage = () => {
     event.currentTarget.style.boxShadow = "0 0 0 1px rgba(19, 164, 236, 0.4)";
   };
 
-  const handleFieldBlur = (
+/*   const handleFieldBlur = (
     event: FocusEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     event.currentTarget.style.borderColor = inputBorder;
     event.currentTarget.style.boxShadow = "none";
-  };
+  }; */
 
   useEffect(() => {
     async function getCurrentUser() {
@@ -251,7 +251,7 @@ const TripPlannerPage = () => {
         mb={{ base: 6, lg: 0 }}
         borderLeftRadius="xl"
       >
-        <Stack>
+        <Stack id="sideNavBar">
           <AccountSidebarNav pathname={pathname} />
         </Stack>
 
@@ -314,7 +314,7 @@ const TripPlannerPage = () => {
                           placeholder="e.g. Kyoto, Japan"
                           style={baseFieldStyles}
                           onFocus={handleFieldFocus}
-                          onBlur={handleFieldBlur}
+                          /* onBlur={handleFieldBlur} */
                         />
                       </Stack>
 
@@ -334,7 +334,7 @@ const TripPlannerPage = () => {
                             paddingRight: "2.75rem",
                           }}
                           onFocus={handleFieldFocus}
-                          onBlur={handleFieldBlur}
+                          /* onBlur={handleFieldBlur} */
                         >
                           <option value="solo">Solo</option>
                           <option value="couple">Couple</option>
@@ -357,7 +357,7 @@ const TripPlannerPage = () => {
                           onChange={handleChange("startDate")}
                           style={baseFieldStyles}
                           onFocus={handleFieldFocus}
-                          onBlur={handleFieldBlur}
+                          /* onBlur={handleFieldBlur} */
                         />
                       </Stack>
 
@@ -375,7 +375,7 @@ const TripPlannerPage = () => {
                           onChange={handleChange("endDate")}
                           style={baseFieldStyles}
                           onFocus={handleFieldFocus}
-                          onBlur={handleFieldBlur}
+                         /*  onBlur={handleFieldBlur} */
                         />
                       </Stack>
 
@@ -395,7 +395,7 @@ const TripPlannerPage = () => {
                             paddingRight: "2.75rem",
                           }}
                           onFocus={handleFieldFocus}
-                          onBlur={handleFieldBlur}
+                          /* onBlur={handleFieldBlur} */
                         >
                           <option value="saver">Saver</option>
                           <option value="medium">Balanced</option>
@@ -422,7 +422,7 @@ const TripPlannerPage = () => {
                           resize: "vertical",
                         }}
                         onFocus={handleFieldFocus}
-                        onBlur={handleFieldBlur}
+                        /* onBlur={handleFieldBlur} */
                       />
                     </Stack>
 

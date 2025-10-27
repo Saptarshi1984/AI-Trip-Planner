@@ -208,15 +208,11 @@ const ProfilePage = () => {
         borderLeftRadius="xl"
       >
         <Stack>
-          <Flex align="center" gap={3}>
-            <Heading size="md" fontWeight="bold">
-              Dashboard
-            </Heading>
-          </Flex>
+          
 
-          <AccountSidebarNav pathname={pathname} />
+          <Stack id="sideNavBar"><AccountSidebarNav pathname={pathname} /></Stack>
         </Stack>
-
+        
         <Stack>
           <Text fontWeight="bold">{displayName}</Text>
 

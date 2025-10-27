@@ -135,7 +135,7 @@ const MyTripPage = () => {
         mb={{ base: 6, lg: 0 }}
         borderLeftRadius="xl"
       >
-        <Stack>
+        <Stack id="sideNavBar">
           <AccountSidebarNav pathname={pathname} />
         </Stack>
 

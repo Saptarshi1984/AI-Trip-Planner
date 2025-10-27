@@ -7,7 +7,6 @@ export type AuthProps = {
   password: string;
 };
 
-
 //check auth status
 export async function checkAuthStatus() {
   try {
@@ -30,20 +29,16 @@ export async function signInUser({ email, password }: AuthProps) {
 }
 
 //sign in with Google
-export async function signInWithGoolge(success:string, failure:string) {
+export async function signInWithGoolge(success: string, failure: string) {
   try {
-    
-     const user =  account.createOAuth2Session({
-              provider: OAuthProvider.Google,
-              success, // redirect here on success
-              failure, // redirect here on failure
-            });
-     if(user) return user;
-    
-    
+    const user = account.createOAuth2Session({
+      provider: OAuthProvider.Google,
+      success, // redirect here on success
+      failure, // redirect here on failure
+    });
+    if (user) return user;
   } catch (error) {
     return null;
-    
   }
 }
 
@@ -62,6 +57,6 @@ export async function signUpUser({ email, password }: AuthProps) {
 }
 
 //sign out user function
-async function signOutUser() {
+export async function signOutUser() {
   await account.deleteSessions();
 }

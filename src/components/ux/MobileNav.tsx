@@ -1,7 +1,15 @@
 ﻿"use client";
 
-import NextLink from "next/link";
-import { Drawer, Portal, Button, CloseButton } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+/* import NextLink from "next/link"; */
+import {
+  Drawer,
+  Portal,
+  Button,
+  CloseButton,
+  Separator,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 
 import { ColorModeButton, useColorModeValue } from "../ui/color-mode";
 
@@ -9,25 +17,62 @@ import { LuMenu } from "react-icons/lu";
 import Navlink from "./Navlink";
 import type { NavlinkProps } from "./Navlink";
 import { NAV_ITEMS } from "./Navlink";
+import AccountSidebarNav from "./AccountSidebarNav";
+import { usePathname } from "next/navigation";
+import { checkAuthStatus } from "@/lib/appwrite.service";
+import { signOutUser } from "@/lib/appwrite.service";
+import { useRouter } from "next/navigation";
 
 export default function MobileNav({
   items = NAV_ITEMS,
   primaryColor = "pink.600",
 }: NavlinkProps) {
-  /* const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isMobile] = useMediaQuery("(max-width: 800px)"); */
-
   const IconBGColor = useColorModeValue("gray.800", "pink.600");
   const DrawerBGColor = useColorModeValue("gray.800", "pink.800");
   const titleColor = useColorModeValue("gray.800", "gray.200");
-  
+  const [auth, setAuth] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
+  const handleAccountNavClick = () => {
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+  const pathname = usePathname();
+  const router = useRouter();
+  useEffect(() => {
+    async function getCurrentUser() {
+      const user = await checkAuthStatus();
 
+      if (user) {
+        setAuth(true);
+        return;
+      } else setAuth(false);
+    }
+
+    void getCurrentUser();
+  }, []);
+
+  async function  handleSignOut () {
+       await signOutUser();
+       setLoading(true);
+       setAuth(false);
+       router.replace('/SignIn');
+  }
   return (
     <div id="mobileNav">
-      <Drawer.Root>
+      <Drawer.Root
+        open={isOpen}
+        onOpenChange={({ open }) => setIsOpen(open)}
+      >
         <Drawer.Trigger asChild>
-          <Button size={"sm"} bg={IconBGColor}>
-            <LuMenu color= "white" />
+          <Button
+            size={"sm"}
+            bg={IconBGColor}
+            onClick={() => setIsOpen(true)}
+          >
+            <LuMenu color="white" />
           </Button>
         </Drawer.Trigger>
         <Portal>
@@ -39,12 +84,22 @@ export default function MobileNav({
               </Drawer.Header>
               <Drawer.Body bg={DrawerBGColor}>
                 <Navlink />
+                <Separator w={"full"} my={10} />
+
+                {auth && (
+                  <AccountSidebarNav
+                    pathname={pathname}
+                    onClick={handleAccountNavClick}
+                  />
+                )}
               </Drawer.Body>
               <Drawer.Footer>
-                <ColorModeButton
-                  display={{ sm: "inline-flex" }}
-                />
-                <Button>Sign Out</Button>
+                <ColorModeButton display={{ sm: "inline-flex" }} />
+                <Button 
+                onClick={handleSignOut}
+                loading={loading}
+                >
+                  Sign Out</Button>
               </Drawer.Footer>
               <Drawer.CloseTrigger asChild>
                 <CloseButton size="sm" />

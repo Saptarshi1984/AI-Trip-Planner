@@ -76,7 +76,7 @@
 }
 
 @media only screen and (max-width: 800px) {
-  #navLinks, #login {
+  #navLinks, #login, #sideNavBar {
     display: none;
   }
 }

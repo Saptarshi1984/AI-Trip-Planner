@@ -11,7 +11,7 @@ import { checkAuthStatus } from "@/lib/appwrite.service";
 import { account, tablesDB } from "@/lib/appwrite.client";
 import Brand from "./Brand";
 import UserAvatar from "./UserAvatar";
-
+import { signOutUser } from "@/lib/appwrite.service";
 const PRIMARY_COLOR = "pink.600";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
@@ -55,9 +55,9 @@ export function Navbar() {
 
 
   //signout function
-  async function signOut() {
+  async function handleSignOut() {
     setLoading(true);
-    await account.deleteSessions();
+    await signOutUser();
     router.replace('/SignIn');
   }
 
@@ -118,7 +118,7 @@ export function Navbar() {
                 transition="transform 0.2s ease"
                 loading={loading}
                 _hover={{ transform: "scale(1.05)", bg: PRIMARY_COLOR }}
-                onClick={signOut}
+                onClick={handleSignOut}
               >
                 Sign Out
               </Button>}
