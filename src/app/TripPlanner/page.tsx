@@ -438,6 +438,7 @@ const TripPlannerPage = () => {
                         _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
                         _active={{ bg: "rgba(19, 164, 236, 0.8)" }}
                         loadingText="Planning"
+                        loading={isSubmitting}
                       >
                         Generate itinerary
                       </Button>

@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from "react";
 import {
-  Avatar,
   Box,
   Button,
-  type IconProps,
   Flex,
   GridItem,
   Heading,
   Icon,
-  IconButton,
   Link as ChakraLink,
   SimpleGrid,
   Stack,
@@ -24,7 +21,6 @@ import {
   MdArrowForward,
   MdBookmarks,
   MdExplore,
-  MdLightbulbOutline,
   MdNotificationsNone,
   MdPersonOutline,
 } from "react-icons/md";
@@ -56,6 +52,7 @@ const exploreCards = [
 const DashboardPage = () => {
   const router = useRouter();
   const [displayName, setDisplayName] = useState<string>("Unknown");
+  const [loading, setLoading] = useState(false);
   const pathname = usePathname();
 
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
@@ -180,7 +177,8 @@ const DashboardPage = () => {
               px={6}
               py={3}
               _hover={{ bg: "rgba(19, 164, 236, 0.9)" }}
-              onClick={() => router.push("/TripPlanner")}
+              onClick={() =>{ setLoading(true); router.push("/TripPlanner");}}
+              loading={loading}
             >
               Start New Trip
             </Button>
