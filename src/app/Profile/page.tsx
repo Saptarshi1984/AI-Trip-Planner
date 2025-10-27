@@ -3,7 +3,6 @@
 import {
   useEffect,
   useState,
-  useRef,
   type ChangeEvent,
   type FormEvent,
 } from "react";

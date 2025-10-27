@@ -32,8 +32,8 @@ const INITIAL_ERROR_STATE = {
 
 export default function SignUpPage() {
   const [formValues, setFormValues] = useState(INITIAL_FORM_STATE);
-  const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  /* const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE); */
+  /* const [isSubmitting, setIsSubmitting] = useState(false); */
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -47,7 +47,7 @@ export default function SignUpPage() {
   const handleChange =
     (field: "email" | "password") => (event: ChangeEvent<HTMLInputElement>) => {
       setFormValues((prev) => ({ ...prev, [field]: event.target.value }));
-      setFormErrors((prev) => ({ ...prev, [field]: "" }));
+      /* setFormErrors((prev) => ({ ...prev, [field]: "" })); */
     };
 
   const validate = () => {
@@ -62,7 +62,7 @@ export default function SignUpPage() {
       nextErrors.password = "Password is required";
     }
 
-    setFormErrors(nextErrors);
+    /* setFormErrors(nextErrors); */
     return !nextErrors.email && !nextErrors.password;
   };
 
@@ -108,10 +108,10 @@ export default function SignUpPage() {
       return null;
     }
 
-    setIsSubmitting(true);
+    /* setIsSubmitting(true); */
 
     setTimeout(() => {
-      setIsSubmitting(false);
+      /* setIsSubmitting(false); */
     }, 800);
   };
 

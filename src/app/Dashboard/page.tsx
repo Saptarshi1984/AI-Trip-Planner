@@ -26,6 +26,7 @@ import {
 } from "react-icons/md";
 import { account, tablesDB } from "@/lib/appwrite.client";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
+import { error } from "console";
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
@@ -86,7 +87,7 @@ const DashboardPage = () => {
 
   
    void getCurrentUser();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     (async () => {
@@ -100,8 +101,10 @@ const DashboardPage = () => {
             rowId: me.$id,
             data: { email: me.email },
           });
-        } catch (e: any) {
-          if (e?.code === 409) {
+
+          
+        } catch (e) {
+          if (e === 409) {
             await tablesDB.updateRow({
               databaseId: "68ea1c19002774b84c21",
               tableId: "user_profiles",

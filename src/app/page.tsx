@@ -21,7 +21,7 @@ export default function Home() {
 
   
   void getCurrentUser();
-  }, []);
+  }, [router]);
 
   return (
     <main>
