@@ -66,7 +66,6 @@ TONE & CONSTRAINTS
 NOW PRODUCE THE ITINERARY using the provided inputs.
 `;
       
-
 const messages: ChatCompletionCreateParams["messages"] = [
   { role: "system", content: prompt },
 ];
