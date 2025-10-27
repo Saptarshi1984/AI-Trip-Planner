@@ -7,7 +7,6 @@ import {
   Heading,
   HStack,
   List,
-  Link,
   ListItem,
   Stack,
   Text,
@@ -20,7 +19,6 @@ export interface SubscriptionCardProps {
   price: string;
   priceSuffix?: string;
   ctaLabel: string;
-  ctaHref?: string;
   features: string[];
   badgeLabel?: string;
   highlighted?: boolean;
@@ -32,7 +30,6 @@ export default function SubscriptionCard({
   price,
   priceSuffix = "",
   ctaLabel,
-  ctaHref = "#",
   features,
   badgeLabel,
   highlighted = false,

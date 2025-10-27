@@ -15,18 +15,13 @@ import { ColorModeButton, useColorModeValue } from "../ui/color-mode";
 
 import { LuMenu } from "react-icons/lu";
 import Navlink from "./Navlink";
-import type { NavlinkProps } from "./Navlink";
-import { NAV_ITEMS } from "./Navlink";
 import AccountSidebarNav from "./AccountSidebarNav";
 import { usePathname } from "next/navigation";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import { signOutUser } from "@/lib/appwrite.service";
 import { useRouter } from "next/navigation";
 
-export default function MobileNav({
-  items = NAV_ITEMS,
-  primaryColor = "pink.600",
-}: NavlinkProps) {
+export default function MobileNav() {
   const IconBGColor = useColorModeValue("gray.800", "pink.600");
   const DrawerBGColor = useColorModeValue("gray.800", "pink.800");
   const titleColor = useColorModeValue("gray.800", "gray.200");

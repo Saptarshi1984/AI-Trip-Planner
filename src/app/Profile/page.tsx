@@ -7,8 +7,8 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { account, tablesDB, storage, ID } from "@/lib/appwrite.client";
-import { Permission, Role } from "appwrite";
+import { account, tablesDB } from "@/lib/appwrite.client";
+
 import {
   Input,
   Box,
@@ -21,8 +21,7 @@ import {
   Text,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import Image from "next/image";
-import { FaCamera } from "react-icons/fa";
+
 import NextLink from "next/link";
 import { MdEdit } from "react-icons/md";
 import { usePathname, useRouter } from "next/navigation";
@@ -60,9 +59,6 @@ const ProfilePage = () => {
   );
   const [isEditing, setIsEditing] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [rowExists, setRowExists] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [imageURL, setImageURL] = useState<string>("");
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const cardBg = useColorModeValue("#ffffff", "#182830");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
@@ -127,15 +123,14 @@ const ProfilePage = () => {
 
       setProfile(nextProfile);
       setInitialProfile({ ...nextProfile });
-      setImageURL(nextProfile.profilePictureURL || "");
-      setRowExists(true);
+
       return nextProfile;
     } catch (error) {
       console.error("Error fetching user data:", error);
-      setRowExists(false);
+
       setProfile(null);
       setInitialProfile(null);
-      setImageURL("");
+
       return null;
     } finally {
     }
@@ -168,7 +163,7 @@ const ProfilePage = () => {
       });
 
       setInitialProfile({ ...profile });
-      setRowExists(true);
+
       setIsEditing(false);
     } catch (err) {
       console.error("Update failed:", err);
@@ -208,11 +203,11 @@ const ProfilePage = () => {
         borderLeftRadius="xl"
       >
         <Stack>
-          
-
-          <Stack id="sideNavBar"><AccountSidebarNav pathname={pathname} /></Stack>
+          <Stack id="sideNavBar">
+            <AccountSidebarNav pathname={pathname} />
+          </Stack>
         </Stack>
-        
+
         <Stack>
           <Text fontWeight="bold">{displayName}</Text>
 

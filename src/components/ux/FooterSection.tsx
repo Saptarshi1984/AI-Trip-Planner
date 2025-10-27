@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Box, Container, Flex, HStack, Link, Stack, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, HStack, Link, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 import { usePathname } from "next/navigation";

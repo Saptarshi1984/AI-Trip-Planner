@@ -1,15 +1,17 @@
-import { openai }from '@/lib/openai.client'
+import { openai } from "@/lib/openai.client";
 import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
 
-const startLocation= 'Kolkata'
-const destination= 'Meghalaya'
-const travellers= 'Couple'
-const dateRange= '1st Oct to 15th Oct'
-const budget= 'Balanced'
-const query= 'Give me a detailted trip plan for Meghalaya, for 10 days itenery.'
 
 
-const prompt = `You are an expert trip planner. Follow the structure and formatting rules EXACTLY.
+export async function TripPlanningAgent(
+  startLocation: string,
+  destination: string,
+  travellers: string,
+  dateRange: string,
+  budget: string,
+  query: string
+): Promise<string> {
+  const prompt = `You are an expert trip planner. Follow the structure and formatting rules EXACTLY.
 
 STYLE & FORMATTING
 - Use Markdown.
@@ -65,19 +67,11 @@ TONE & CONSTRAINTS
 
 NOW PRODUCE THE ITINERARY using the provided inputs.
 `;
-      
-const messages: ChatCompletionCreateParams["messages"] = [
-  { role: "system", content: prompt },
-];
 
-export async function TripPlanningAgent(
-  startLocation:string,
-  destination: string,
-  travellers:string,
-  dateRange:string,
-  budget:string,
-  query: string
-): Promise<string> {
+  const messages: ChatCompletionCreateParams["messages"] = [
+    { role: "system", content: prompt },
+  ];
+
   messages.push({
     role: "user",
     content: `Start Location: ${startLocation}
@@ -85,7 +79,7 @@ export async function TripPlanningAgent(
               Travellers: ${travellers}
               Date Range: ${dateRange}
               Budget: ${budget}  
-              Query:${query}`
+              Query:${query}`,
   });
 
   const resArray = await openai.chat.completions.create({

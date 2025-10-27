@@ -18,8 +18,6 @@ import {
   useEffect,
   useRef,
   useState,
-  type ChangeEvent,
-  type FormEvent,
 } from "react";
 
 const PRIMARY_COLOR = "#13a4ec";
@@ -34,16 +32,12 @@ export type GoogleImageItem = {
 
 type GoogleImageSearchProps = {
   destination?: string | null;
-  placeholder?: string;
-  ctaLabel?: string;
 };
 
 export default function GoogleImageSearch({
   destination,
-  placeholder = "Try: Kyoto, Japan",
-  ctaLabel = "Search",
 }: GoogleImageSearchProps) {
-  const [query, setQuery] = useState(() => destination?.trim() ?? "");
+  /* const [query, setQuery] = useState(() => destination?.trim() ?? ""); */
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<GoogleImageItem[]>([]);
   const [error, setError] = useState("");
@@ -97,7 +91,7 @@ export default function GoogleImageSearch({
       normalizedDestination !== lastAutoQueryRef.current
     ) {
       lastAutoQueryRef.current = normalizedDestination;
-      setQuery(normalizedDestination);
+      /* setQuery(normalizedDestination); */
       void fetchImages(normalizedDestination);
     }
   }, [destination, fetchImages]);

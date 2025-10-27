@@ -1,4 +1,4 @@
-"use client";
+/* "use client";
 import { useRef } from "react";
 import Image from "next/image";
 import { FaCamera } from "react-icons/fa";
@@ -72,4 +72,4 @@ const UserProfileCard = ({ profileURL }: profileProps) => {
   );
 };
 
-export default UserProfileCard;
+export default UserProfileCard; */

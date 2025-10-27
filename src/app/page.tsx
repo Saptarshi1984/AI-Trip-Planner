@@ -13,13 +13,14 @@ export default function Home() {
   const router = useRouter();
 
   //checking authentication status
+  useEffect(() => {
   async function getCurrentUser() {
     const user = await checkAuthStatus();
     router.replace(user ? "/Dashboard" : "/");
   }
 
-  useEffect(() => {
-    getCurrentUser();
+  
+  void getCurrentUser();
   }, []);
 
   return (

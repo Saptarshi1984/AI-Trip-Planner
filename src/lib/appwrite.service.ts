@@ -12,6 +12,7 @@ export async function checkAuthStatus() {
   try {
     return await account.get();
   } catch (error) {
+    console.error("Error getting auth status", error);
     return null;
   }
 }
@@ -24,6 +25,7 @@ export async function signInUser({ email, password }: AuthProps) {
       password,
     });
   } catch (error) {
+    console.error("Error while signing in user", error);
     return null;
   }
 }
@@ -38,6 +40,7 @@ export async function signInWithGoolge(success: string, failure: string) {
     });
     if (user) return user;
   } catch (error) {
+    console.error("Error while Google signing in", error);
     return null;
   }
 }
@@ -52,7 +55,7 @@ export async function signUpUser({ email, password }: AuthProps) {
     });
     return user ?? null;
   } catch (error) {
-    console.error("User signup not sucessful");
+    console.error("User signup not sucessful", error);
   }
 }
 

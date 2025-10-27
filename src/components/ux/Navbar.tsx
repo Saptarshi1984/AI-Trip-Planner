@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Container, Flex, HStack, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, HStack} from "@chakra-ui/react";
 import { ColorModeButton, useColorModeValue } from "../ui/color-mode";
 import Navlink from "./Navlink";
 import MobileNav from "./MobileNav";

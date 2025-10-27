@@ -63,7 +63,8 @@ const DashboardPage = () => {
     "rgba(19, 164, 236, 0.12)",
     "rgba(19, 164, 236, 0.2)"
   );
-
+  
+  useEffect(() => {
   async function getCurrentUser() {
     const user = await checkAuthStatus();
 
@@ -83,8 +84,8 @@ const DashboardPage = () => {
     setDisplayName(userName);
   }
 
-  useEffect(() => {
-    getCurrentUser();
+  
+   void getCurrentUser();
   }, []);
 
   useEffect(() => {
@@ -112,7 +113,7 @@ const DashboardPage = () => {
           }
         }
       } catch (e) {
-        // no session; handle as needed
+        console.log("Error updating row", e);
       }
     })();
   }, []);

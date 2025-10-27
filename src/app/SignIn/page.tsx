@@ -2,7 +2,7 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { account } from "@/lib/appwrite.client";
+
 import {
   Box,
   Button,
@@ -15,7 +15,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@/components/ui/color-mode";
-import { OAuthProvider } from "appwrite";
 import NextLink from "next/link";
 import { signInUser, signInWithGoolge } from "@/lib/appwrite.service";
 import { FcGoogle } from "react-icons/fc";
@@ -32,10 +31,10 @@ export default function SignInPage() {
     email: "",
     password: "",
   });
-  const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE);
+  /* const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE); */
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [showPassword, setShowPassword] = useState(false);
 
   const cardBg = useColorModeValue("white", "gray.900");
@@ -45,7 +44,7 @@ export default function SignInPage() {
   const handleChange =
     (field: "email" | "password") => (event: ChangeEvent<HTMLInputElement>) => {
       setFormValues((prev) => ({ ...prev, [field]: event.target.value }));
-      setFormErrors((prev) => ({ ...prev, [field]: "" }));
+      /* setFormErrors((prev) => ({ ...prev, [field]: "" })); */
     };
 
   const validate = () => {
@@ -60,7 +59,7 @@ export default function SignInPage() {
       nextErrors.password = "Password is required";
     }
 
-    setFormErrors(nextErrors);
+    /* setFormErrors(nextErrors); */
     return !nextErrors.email && !nextErrors.password;
   };
 
@@ -82,10 +81,10 @@ export default function SignInPage() {
       setLoading(false);
     }
 
-    setIsSubmitting(true);
+    
 
     setTimeout(() => {
-      setIsSubmitting(false);
+      
     }, 800);
   };
 
