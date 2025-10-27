@@ -10,7 +10,6 @@ const plans: SubscriptionCardProps[] = [
     price: "Free",
     priceSuffix: "/forever",
     ctaLabel: "Get Started",
-    ctaHref: "#",
     features: [
       "Personalized Itineraries",
       "Real-Time Updates",
@@ -22,7 +21,6 @@ const plans: SubscriptionCardProps[] = [
     price: "$19",
     priceSuffix: "/month",
     ctaLabel: "Upgrade Now",
-    ctaHref: "#",
     features: [
       "Everything in Basic, plus:",
       "Advanced Budget Optimization",
@@ -38,7 +36,6 @@ const plans: SubscriptionCardProps[] = [
     price: "$49",
     priceSuffix: "/month",
     ctaLabel: "Choose Ultimate",
-    ctaHref: "#",
     features: [
       "Everything in Premium, plus:",
       "Dedicated Travel Concierge",

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Container, Flex, HStack} from "@chakra-ui/react";
+import { Box, Button, Container, Flex, HStack } from "@chakra-ui/react";
 import { ColorModeButton, useColorModeValue } from "../ui/color-mode";
 import Navlink from "./Navlink";
 import MobileNav from "./MobileNav";
@@ -23,42 +23,39 @@ export function Navbar() {
   const containerBg = useColorModeValue("gray.200", "gray.900");
   const [authStatus, setAuthStatus] = useState(false);
   const [displayName, setDisplayName] = useState<string>("Unknown");
-  const [userProfile, setUserProfile] = useState<string>('');
-  
+  /* const [userProfile, setUserProfile] = useState<string>(''); */
+
   //cheking auth status
 
-    async function getCurrentUser() {
+  async function getCurrentUser() {
     const user = await checkAuthStatus();
     setAuthStatus(user ? true : false);
-    
 
     const me = await account.get();
-    
-        const row = await tablesDB.getRow({
-          databaseId: DATABASE_ID,
-          tableId: TABLE_ID,
-          rowId: me.$id,
-        });
-    
-        const firstname = row.firstName;
-        const lastname = row.lastName;
-        const userImageUrl = row.profilePictureURL;
-        const userName = firstname + " " + lastname;
 
-        setDisplayName(userName);
-        setUserProfile(userImageUrl);
+    const row = await tablesDB.getRow({
+      databaseId: DATABASE_ID,
+      tableId: TABLE_ID,
+      rowId: me.$id,
+    });
+
+    const firstname = row.firstName;
+    const lastname = row.lastName;
+    const userImageUrl = row.profilePictureURL;
+    const userName = firstname + " " + lastname;
+
+    setDisplayName(userName);
   }
 
   useEffect(() => {
     getCurrentUser();
   }, []);
 
-
   //signout function
   async function handleSignOut() {
     setLoading(true);
     await signOutUser();
-    router.replace('/SignIn');
+    router.replace("/SignIn");
   }
 
   useEffect(() => {
@@ -100,28 +97,33 @@ export function Navbar() {
                   transition="transform 0.2s ease"
                   loading={loading}
                   _hover={{ transform: "scale(1.05)", bg: PRIMARY_COLOR }}
-                  onClick={() => {router.push('/SignIn'); setLoading(true);}}
+                  onClick={() => {
+                    router.push("/SignIn");
+                    setLoading(true);
+                  }}
                 >
                   Sign In
                 </Button>
               )}
-              {authStatus && <Button
-                variant={'outline'}
-                colorPalette={PRIMARY_COLOR}                
-                color="white"
-                fontSize="sm"
-                fontWeight="bold"
-                px={4}
-                py={2}
-                rounded="lg"
-                boxShadow="md"
-                transition="transform 0.2s ease"
-                loading={loading}
-                _hover={{ transform: "scale(1.05)", bg: PRIMARY_COLOR }}
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </Button>}
+              {authStatus && (
+                <Button
+                  variant={"outline"}
+                  colorPalette={PRIMARY_COLOR}
+                  color="white"
+                  fontSize="sm"
+                  fontWeight="bold"
+                  px={4}
+                  py={2}
+                  rounded="lg"
+                  boxShadow="md"
+                  transition="transform 0.2s ease"
+                  loading={loading}
+                  _hover={{ transform: "scale(1.05)", bg: PRIMARY_COLOR }}
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </Button>
+              )}
 
               {authStatus && <UserAvatar name={displayName} />}
             </HStack>
