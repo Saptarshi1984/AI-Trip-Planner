@@ -123,7 +123,7 @@ export function Navbar() {
                 Sign Out
               </Button>}
 
-              {authStatus && <UserAvatar name={displayName} imgURL={userProfile} />}
+              {authStatus && <UserAvatar name={displayName} />}
             </HStack>
             <MobileNav />
           </Flex>
