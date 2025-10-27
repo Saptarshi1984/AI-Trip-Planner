@@ -222,6 +222,7 @@ const TripPlannerPage = () => {
           interests: formState.interests.trim(),
         },
       });
+      
     } catch (error) {
       console.error("Failed to save itinerary", error);
     } finally {

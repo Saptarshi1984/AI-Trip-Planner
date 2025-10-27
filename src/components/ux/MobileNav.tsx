@@ -49,24 +49,17 @@ export default function MobileNav() {
     void getCurrentUser();
   }, []);
 
-  async function  handleSignOut () {
-       await signOutUser();
-       setLoading(true);
-       setAuth(false);
-       router.replace('/SignIn');
+  async function handleSignOut() {
+    await signOutUser();
+    setLoading(true);
+    setAuth(false);
+    router.replace("/SignIn");
   }
   return (
     <div id="mobileNav">
-      <Drawer.Root
-        open={isOpen}
-        onOpenChange={({ open }) => setIsOpen(open)}
-      >
+      <Drawer.Root open={isOpen} onOpenChange={({ open }) => setIsOpen(open)}>
         <Drawer.Trigger asChild>
-          <Button
-            size={"sm"}
-            bg={IconBGColor}
-            onClick={() => setIsOpen(true)}
-          >
+          <Button size={"sm"} bg={IconBGColor} onClick={() => setIsOpen(true)}>
             <LuMenu color="white" />
           </Button>
         </Drawer.Trigger>
@@ -90,11 +83,21 @@ export default function MobileNav() {
               </Drawer.Body>
               <Drawer.Footer>
                 <ColorModeButton display={{ sm: "inline-flex" }} />
-                <Button 
-                onClick={handleSignOut}
-                loading={loading}
-                >
-                  Sign Out</Button>
+                {auth ? (
+                  <Button onClick={handleSignOut} loading={loading}>
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      router.replace("/SignIn");
+                      setLoading(true);
+                    }}
+                    loading={loading}
+                  >
+                    Sign In
+                  </Button>
+                )}
               </Drawer.Footer>
               <Drawer.CloseTrigger asChild>
                 <CloseButton size="sm" />

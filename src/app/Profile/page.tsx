@@ -28,6 +28,7 @@ import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
 
+
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
@@ -122,6 +123,7 @@ const ProfilePage = () => {
 
       setProfile(nextProfile);
       setInitialProfile({ ...nextProfile });
+      
 
       return nextProfile;
     } catch (error) {
