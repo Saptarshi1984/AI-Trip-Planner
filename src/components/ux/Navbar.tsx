@@ -41,7 +41,6 @@ export function Navbar() {
 
     const firstname = row.firstName;
     const lastname = row.lastName;
-    const userImageUrl = row.profilePictureURL;
     const userName = firstname + " " + lastname;
 
     setDisplayName(userName);

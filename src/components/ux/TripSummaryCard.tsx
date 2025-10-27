@@ -79,7 +79,7 @@ const TripSummaryCard = ({
       p={{ base: 6, md: 7 }}
       boxShadow="lg"
     >
-      <Stack spacing={5}>
+      <Stack>
         <Flex
           direction={{ base: "column", sm: "row" }}
           gap={4}
@@ -142,4 +142,3 @@ const TripSummaryCard = ({
 };
 
 export default TripSummaryCard;
-
