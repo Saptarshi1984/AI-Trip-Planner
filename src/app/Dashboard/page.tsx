@@ -26,7 +26,7 @@ import {
 } from "react-icons/md";
 import { account, tablesDB } from "@/lib/appwrite.client";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
-
+import { useLoading } from "@/context/LoadingProvider";
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
@@ -55,7 +55,7 @@ const DashboardPage = () => {
   const [displayName, setDisplayName] = useState<string>("Unknown");
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
-
+  const {setPageLoading} =useLoading();
   const pageBg = useColorModeValue("#f6f7f8", "#101c22");
   const foregroundColor = useColorModeValue("#0a0a0a", "#f7f7f7");
   const subtleColor = useColorModeValue("#6b7280", "#9ca3af");
@@ -67,6 +67,7 @@ const DashboardPage = () => {
   
   useEffect(() => {
   async function getCurrentUser() {
+    setPageLoading(true);
     const user = await checkAuthStatus();
 
     router.replace(user ? "/Dashboard" : "/SignIn");
@@ -83,6 +84,7 @@ const DashboardPage = () => {
     const lastname = row.lastName;
     const userName = firstname + " " + lastname;
     setDisplayName(userName);
+    setPageLoading(false);
   }
 
   

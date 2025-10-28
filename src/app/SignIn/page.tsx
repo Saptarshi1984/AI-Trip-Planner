@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState,useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-
+import { useLoading } from "@/context/LoadingProvider";
 import {
   Box,
   Button,
@@ -19,7 +19,7 @@ import NextLink from "next/link";
 import { signInUser, signInWithGoolge } from "@/lib/appwrite.service";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-
+import { checkAuthStatus } from "@/lib/appwrite.service";
 const INITIAL_ERROR_STATE = {
   email: "",
   password: "",
@@ -31,10 +31,10 @@ export default function SignInPage() {
     email: "",
     password: "",
   });
-  /* const [formErrors, setFormErrors] = useState(INITIAL_ERROR_STATE); */
+  
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  
+  const  {setPageLoading} = useLoading();
   const [showPassword, setShowPassword] = useState(false);
 
   const cardBg = useColorModeValue("white", "gray.900");

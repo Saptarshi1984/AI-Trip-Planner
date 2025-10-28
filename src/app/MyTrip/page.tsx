@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { account, tablesDB } from "@/lib/appwrite.client";
 import { usePathname, useRouter } from "next/navigation";
-import { Box, Button, Flex, Heading, Stack, Text, Spinner } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+  Spinner,
+} from "@chakra-ui/react";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
@@ -81,7 +89,9 @@ const MyTripPage = () => {
       });
     } catch (error) {
       console.error("Failed to fetch itinerary rows", error);
-      setFetchError("We couldn't load your saved itineraries. Please try again.");
+      setFetchError(
+        "We couldn't load your saved itineraries. Please try again."
+      );
     } finally {
       setIsLoadingTrips(false);
     }
@@ -162,8 +172,8 @@ const MyTripPage = () => {
           p={{ base: 8, md: 16 }}
         >
           {isLoadingTrips ? (
-            <Stack align="center" >
-              <Spinner color={PRIMARY_COLOR} size="lg"  />
+            <Stack align="center">
+              <Spinner color={PRIMARY_COLOR} size="lg" />
               <Text color={subtleColor}>Loading your saved trips...</Text>
             </Stack>
           ) : fetchError ? (
@@ -199,19 +209,18 @@ const MyTripPage = () => {
               </Button>
             </Stack>
           ) : (
-            <Stack w="full" >
+            <Stack w="full">
               <Stack
                 direction={{ base: "column", md: "row" }}
                 justify="space-between"
                 align={{ base: "flex-start", md: "center" }}
-                
               >
                 <Heading size="lg">Your saved itineraries</Heading>
                 <Text color={subtleColor}>
                   Review the plans you&apos;ve crafted with Trip Planner AI.
                 </Text>
               </Stack>
-              <Stack >
+              <Stack>
                 {actionError ? (
                   <Text color="red.400" fontSize="sm">
                     {actionError}
@@ -232,12 +241,14 @@ const MyTripPage = () => {
                 ))}
               </Stack>
               {activeTrip ? (
-                <Stack >
+                <Stack>
                   <Heading size="md">
-                    Itinerary preview for {activeTrip.destination || "your trip"}
+                    Itinerary preview for{" "}
+                    {activeTrip.destination || "your trip"}
                   </Heading>
                   <Text color={subtleColor}>
-                    Created on {activeTrip.$createdAt?.slice(0, 10) ?? "Unknown date"}
+                    Created on{" "}
+                    {activeTrip.$createdAt?.slice(0, 10) ?? "Unknown date"}
                   </Text>
                   <IteneryResponseCard message={activeTrip.itenery} />
                 </Stack>

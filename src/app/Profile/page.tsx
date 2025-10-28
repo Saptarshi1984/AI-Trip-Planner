@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { account, tablesDB } from "@/lib/appwrite.client";
 
 import {
@@ -27,7 +22,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { checkAuthStatus } from "@/lib/appwrite.service";
 import AccountSidebarNav from "@/components/ux/AccountSidebarNav";
-
+import { useLoading } from "@/context/LoadingProvider";
 
 const PRIMARY_COLOR = "#13a4ec";
 const DATABASE_ID = "68ea1c19002774b84c21";
@@ -53,6 +48,7 @@ const PROFILE_FIELDS = [
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { setPageLoading } = useLoading();
   const [profile, setProfile] = useState<ProfileForm | null>(null);
   const [initialProfile, setInitialProfile] = useState<ProfileForm | null>(
     null
@@ -79,6 +75,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     async function getCurrentUser() {
+      setPageLoading(true);
       const user = await checkAuthStatus();
 
       if (!user) {
@@ -87,6 +84,7 @@ const ProfilePage = () => {
       }
 
       await fetchUserProfile();
+      setPageLoading(false);
     }
 
     void getCurrentUser();
@@ -123,7 +121,6 @@ const ProfilePage = () => {
 
       setProfile(nextProfile);
       setInitialProfile({ ...nextProfile });
-      
 
       return nextProfile;
     } catch (error) {

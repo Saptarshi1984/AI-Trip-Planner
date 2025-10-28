@@ -12,6 +12,7 @@ import { account, tablesDB } from "@/lib/appwrite.client";
 import Brand from "./Brand";
 import UserAvatar from "./UserAvatar";
 import { signOutUser } from "@/lib/appwrite.service";
+
 const PRIMARY_COLOR = "pink.600";
 const DATABASE_ID = "68ea1c19002774b84c21";
 const TABLE_ID = "user_profiles";
@@ -23,7 +24,7 @@ export function Navbar() {
   const containerBg = useColorModeValue("gray.200", "gray.900");
   const [authStatus, setAuthStatus] = useState(false);
   const [displayName, setDisplayName] = useState<string>("Unknown");
-  /* const [userProfile, setUserProfile] = useState<string>(''); */
+  
 
   //cheking auth status
 
@@ -52,9 +53,9 @@ export function Navbar() {
 
   //signout function
   async function handleSignOut() {
-    setLoading(true);
+    setLoading(true);    
     await signOutUser();
-    router.replace("/SignIn");
+    router.replace("/SignIn");    
   }
 
   useEffect(() => {
